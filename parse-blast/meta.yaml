@@ -1,0 +1,4 @@
+name: "parse blast"
+description: Filters tabular BLAST results by evalue threshold and writes query sequences with hits passing the threshold into separate file as known sequences and writes query sequences with no hits or with low quality hits into fasta file as unknowns.
+authors:
+  - Taavi Päll
