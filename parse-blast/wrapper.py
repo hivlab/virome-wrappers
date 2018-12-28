@@ -6,6 +6,7 @@ __license__ = "MIT"
 import pandas as pd
 from Bio import SeqIO
 from pandas.io.common import EmptyDataError
+import dill
 
 def touch(fname, times=None):
     """https://stackoverflow.com/questions/1158076/implement-touch-using-python#1160227
