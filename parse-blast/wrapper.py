@@ -52,14 +52,9 @@ def parse_blast_result(blast_result, query, e_cutoff, outfmt, mapped, unmapped):
             if record.id not in known_ids:
                 SeqIO.write(record, out, "fasta")
 
-def run_parse_blast(input, output, params):
-    """Merge function arguments into dictionary
-    """
-    options = dict(input)
-    options.update(output)
-    options.update(params)
+if __name__ == '__main__':
+    options = dict(snakemake.input)
+    options.update(snakemake.output)
+    options.update(snakemake.params)
     # Unwrap arguments and run function
     parse_blast_result(**options)
-
-if __name__ == '__main__':
-    run_parse_blast(snakemake.input, snakemake.output, snakemake.params)
