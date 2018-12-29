@@ -1,0 +1,4 @@
+name: "blast+"
+description: "Run blast query using BLAST+."
+authors:
+  - "Taavi Päll"
