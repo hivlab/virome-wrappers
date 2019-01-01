@@ -3,6 +3,7 @@ __copyright__ = "Copyright 2018, Taavi Päll"
 __email__ = "tapa741@gmail.com"
 __license__ = "MIT"
 
+import os
 import pandas as pd
 from Bio import SeqIO
 from pandas.io.common import EmptyDataError
