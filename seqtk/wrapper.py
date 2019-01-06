@@ -8,9 +8,8 @@ from snakemake.shell import shell
 # Get parameters
 seed = snakemake.params.get("seed", "11")
 print("This is seed:", seed)
-frac = snakemake.params.get("frac")
+frac = snakemake.params.get("frac", "1")
 print("This is frac:", frac)
-print("This is frac directly from snakemake.params", snakemake.params.frac)
 
 # Command to run
 if (frac > 0 and frac < 1):
@@ -19,7 +18,7 @@ else:
     cmd = "ln -sr {snakemake.input[%s]} {snakemake.output[%s]}"
 
 # Run command
-for i in enumerate(snakemake.input):
-    cmd = cmd % (i, i)
+for index, input in enumerate(snakemake.input):
+    cmd = cmd % (index, index)
     print("This is command:\n", cmd)
     shell(cmd)
