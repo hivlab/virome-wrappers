@@ -12,8 +12,8 @@ log = snakemake.log_fmt_shell(stdout = False, stderr = True)
 # Run command
 shell(
     "(fastp -i {snakemake.input[0]} -I {snakemake.input[1]}"
-    "-o {snakemake.output.pair1} -O {snakemake.output.pair2}"
-    "{extra}"
-    "-h {snakemake.output.html} -j {snakemake.output.json}"
-    "-w {snakemake.threads}) {log}"
-    )
+    " -o {snakemake.output.pair1} -O {snakemake.output.pair2}"
+    " {extra}"
+    " -h {snakemake.output.html} -j {snakemake.output.json}"
+    " -w {snakemake.threads})"
+    " {log}")
