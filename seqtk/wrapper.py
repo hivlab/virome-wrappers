@@ -10,7 +10,7 @@ seed = snakemake.params.get("seed", "11")
 print("This is seed:", seed)
 frac = snakemake.params.get("frac")
 print("This is frac:", frac)
-print(snakemake.params.frac)
+print("This is frac directly from snakemake.params", snakemake.params.frac)
 
 # Command to run
 if (frac > 0 and frac < 1):
