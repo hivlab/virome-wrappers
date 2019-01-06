@@ -21,4 +21,5 @@ else:
 # Run command
 for i in enumerate(snakemake.input):
     cmd = cmd % (i, i)
+    print("This is command:\n", cmd)
     shell(cmd)
