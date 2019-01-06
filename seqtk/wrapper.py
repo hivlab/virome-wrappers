@@ -5,12 +5,18 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 
+# Get parameters
 seed = snakemake.params.get("seed", "11")
 frac = snakemake.params.get("frac", "1")
 
+# Command to run
 if (frac > 0 and frac < 1):
-    shell("seqtk sample -s{seed} {snakemake.input[0]} {frac} > {snakemake.output[0]}")
-    shell("seqtk sample -s{seed} {snakemake.input[1]} {frac} > {snakemake.output[1]}")
+    cmd = "seqtk sample -s{seed} {snakemake.input[%s]} {frac} > {snakemake.output[%s]}"
+
 else:
-    shell("ln -sr {snakemake.input[0]} {snakemake.output[0]}")
-    shell("ln -sr {snakemake.input[1]} {snakemake.output[1]}")
+    cmd = "ln -sr {snakemake.input[%s]} {snakemake.output[%s]}"
+
+# Run command
+for i in enumerate(snakemake.input):
+    cmd = cmd % (i, i)
+    shell(cmd)
