@@ -9,7 +9,8 @@ from Bio import SeqIO
 from pandas.io.common import EmptyDataError
 
 def touch(fname, times=None):
-    """https://stackoverflow.com/questions/1158076/implement-touch-using-python#1160227
+    """Emulates unix touch command.
+    Source: https://stackoverflow.com/questions/1158076/implement-touch-using-python#1160227
     """
     with open(fname, 'a'):
         os.utime(fname, times)
@@ -22,10 +23,10 @@ def read_data(file):
     return df
 
 def parse_blast_result(blast_result, query, e_cutoff, outfmt, mapped, unmapped):
-    """Find out whether the BLAST best hit has a evalue lower than the cutoff. 
-    If yes, output query information. If no, the sequence will be kept for further analysis. 
-    http://biopython.org/DIST/docs/tutorial/Tutorial.html#htoc93.
-    Function expexts BLAST tabular format (outfmt 6)
+    """Finds out whether the BLAST best hit has a evalue lower than the cutoff. 
+    If yes, outputs query information. If no, the sequence will be kept for further analysis. 
+    Source: http://biopython.org/DIST/docs/tutorial/Tutorial.html#htoc93.
+    Function expexts BLAST tabular format (outfmt 6).
     """
     # Import blast output table
     tab = read_data(blast_result)
