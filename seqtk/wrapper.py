@@ -13,7 +13,7 @@ print("This is frac:", frac)
 
 # Command to run
 if (frac > 0 and frac < 1):
-    cmd = "seqtk sample -s{seed} {snakemake.input[%s]} {frac} > {snakemake.output[%s]}"
+    cmd = "seqtk sample -s{seed} {snakemake.input['%s']} {frac} > {snakemake.output['%s']}"
 else:
     cmd = "ln -sr {snakemake.input[%s]} {snakemake.output[%s]}"
 
