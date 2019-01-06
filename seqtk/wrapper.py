@@ -13,12 +13,12 @@ print("This is frac:", frac)
 
 # Command to run
 if (frac > 0 and frac < 1):
-    cmd = "seqtk sample -s{seed} {snakemake.input['%s']} {frac} > {snakemake.output['%s']}"
+    cmd = "seqtk sample -s{{seed}} {{snakemake.input[{i}]}} {{frac}} > {{snakemake.output[{i}]}}"
 else:
-    cmd = "ln -sr {snakemake.input[%s]} {snakemake.output[%s]}"
+    cmd = "ln -sr {{snakemake.input[{i}]}} {{snakemake.output[{i}]}}"
 
 # Run command
 for index, input in enumerate(snakemake.input):
-    cmd = cmd % (index, index)
+    cmd = cmd.format(i = index)
     print("This is command:\n", cmd)
     shell(cmd)
