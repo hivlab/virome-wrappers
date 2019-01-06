@@ -7,7 +7,9 @@ from snakemake.shell import shell
 
 # Get parameters
 seed = snakemake.params.get("seed", "11")
+print("This is seed:", seed)
 frac = float(snakemake.params.get("frac", "1"))
+print("This is frac:", frac)
 
 # Command to run
 if (frac > 0 and frac < 1):
