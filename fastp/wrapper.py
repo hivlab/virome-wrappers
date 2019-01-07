@@ -31,9 +31,6 @@ else:
 
 # Run command
 shell(
-    "(fastp"
-    + input +
-    " {options}"
+    "(fastp" + input + " {options}"
     " -h {html} -j {json}"
-    " -w {snakemake.threads})"
-    " {log}")
+    " -w {snakemake.threads}) {log}")
