@@ -55,8 +55,9 @@ def parse_blast_result(blast_result, query, e_cutoff, outfmt, mapped, unmapped):
                 SeqIO.write(record, out, "fasta")
 
 if __name__ == '__main__':
+    # Merge function arguments into dictionary.
     options = dict(snakemake.input)
     options.update(snakemake.output)
     options.update(snakemake.params)
-    # Unwrap arguments and run function
+    # Unwrap arguments and run parse_blast
     parse_blast_result(**options)
