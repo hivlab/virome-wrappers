@@ -18,6 +18,6 @@ if (frac > 0 and frac < 1):
     shell(cmd.format(snakemake.input[1], snakemake.output[1]))
 
 else:
-    cmd = "ln -sr {0} {1}"
+    cmd = "cp {0} {1}"
     shell(cmd.format(snakemake.input[0], snakemake.output[0]))
     shell(cmd.format(snakemake.input[1], snakemake.output[1]))
