@@ -158,4 +158,5 @@ blast_taxonomy <- function(..., taxdb, nodes, division, other, division_id = 3) 
   filter_division(tab = tab, nodes = nodes, division_id = division_id, div = division, not_div = other)
 }
 
+Sys.getenv("NCBI_API_KEY")
 do.call(blast_taxonomy, c(snakemake@input, snakemake@output, snakemake@params))
