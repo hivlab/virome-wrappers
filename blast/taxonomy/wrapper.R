@@ -19,7 +19,7 @@ get_taxid <- function(gids) {
     api_key <- Sys.getenv("NCBI_API_KEY")
   }
   res <- httr::GET("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi", query = list(db = "nucleotide", id = paste0(gids, collapse = ";"), rettype = "fasta", retmode = "xml", api_key = api_key))
-  stop_for_status(res, task = "fetching taxids for gi list")
+  httr::stop_for_status(res, task = "fetching taxids for gi list")
   cont <- httr::content(res, as = "parsed", encoding = "UTF-8")
   xml2::xml_children(cont) %>%
     purrr::map(xml2::xml_find_first, ".//TSeq_taxid") %>%
