@@ -7,9 +7,9 @@ from snakemake.shell import shell
 
 # Get parameters
 seed = snakemake.params.get("seed", "11")
-print("This is seed:", seed)
+print("Running seqtk with seed:", seed)
 frac = snakemake.params.get("frac", "1")
-print("This is frac:", frac)
+print("Sampling fraction of reads:", frac)
 
 # Commands to run
 if (frac > 0 and frac < 1):
