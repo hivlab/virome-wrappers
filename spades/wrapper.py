@@ -7,8 +7,8 @@ from snakemake.shell import shell
 from os.path import dirname
 
 # Check inputs/arguments.
-if not isinstance(snakemake.input, str) and len(snakemake.input) not 2:
-    raise ValueError("input must have 2 (paired-end) elements")
+n = len(snakemake.input)
+assert n == 2, "Input must contain 2 (paired-end) elements."
 
 # Extract arguments
 options = snakemake.params.get("options", "")
