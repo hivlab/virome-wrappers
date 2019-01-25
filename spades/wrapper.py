@@ -13,12 +13,11 @@ assert n == 2, "Input must contain 2 (paired-end) elements."
 # Extract arguments
 options = snakemake.params.get("options", "")
 
-# Get output dir name from output path where spades writes its output files
-# See spades manual http://cab.spbu.ru/files/release3.12.0/manual.html for SPAdes output
-# Parse output to a list just in case there is more than one output file specified,
-# pick output dir from the first output file path
-output = list(snakemake.output.values())
-output_dir = dirname(output[0])
+# Get output dir name from output path where spades writes its output files.
+# See spades manual http://cab.spbu.ru/files/release3.12.0/manual.html for SPAdes output.
+# Pick output dir from the first output file path.
+output_dir = dirname(snakemake.output[0])
+print("Output dir is ", output_dir)
 
 # Setup log
 log = snakemake.log_fmt_shell(stdout = False, stderr = True)
