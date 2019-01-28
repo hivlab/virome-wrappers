@@ -9,6 +9,10 @@ from os.path import dirname
 # Check inputs/arguments.
 inputs = snakemake.input
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
+print(inputs)
+print(type(inputs))
+print(inputs.keys())
+print(inputs.values())
 assert type(inputs) == type({}), "Input is not a dictionary. " + input_error_msg
 input_names = list(inputs.keys())
 assert any([input_names == ["pe1", "pe2"], input_names == "pe12", input_names == "se"]), input_error_msg
