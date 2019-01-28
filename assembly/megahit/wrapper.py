@@ -42,4 +42,4 @@ outdir = dirname(snakemake.output[0])
 # Setup log
 log = snakemake.log_fmt_shell(stdout = False, stderr = True)
 
-shell("(megahit {options} -t {snakemake.threads} -m 1 {input_flags} -o {outdir}) {log}")
+shell("(megahit {options} -f -t {snakemake.threads} -m 1 {input_flags} -o {outdir}) {log}")
