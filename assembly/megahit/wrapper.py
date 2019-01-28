@@ -10,6 +10,7 @@ from os.path import dirname
 print(snakemake.input.pe1)
 print(snakemake.input.pe2)
 print(*snakemake.input)
+print("Directing to dict")
 inputs = dict(snakemake.input)
 print(*inputs)
 print(**inputs)
