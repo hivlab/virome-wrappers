@@ -33,16 +33,13 @@ else:
 # Merge input paths with flags
 inputs.update((k, ",".join(v if type(v) == type([]) else [v])) for k,v in inputs.items())
 input_flags = input_flags.format(**inputs)
-print("Input flags:", input_flags)
 
 # Get output dir name from output path where spades writes its output files.
 # Pick output dir from the first output file path.
 # See megahit wiki https://github.com/voutcn/megahit/wiki.
 outdir = dirname(snakemake.output[0])
-print("Output dir is ", outdir)
 
 # Setup log
 log = snakemake.log_fmt_shell(stdout = False, stderr = True)
 
-shell("mkdir -p {outdir}")
-shell("(megahit {options} {input_flags} -o {outdir}) {log}")
+shell("(megahit {options} -t {snakemake.threads} -m 1 {input_flags} -o {outdir}) {log}")
