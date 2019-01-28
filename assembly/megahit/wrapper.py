@@ -32,7 +32,7 @@ else:
 
 # Merge input paths with flags
 inputs.update((k, ",".join(v)) for k,v in inputs.items())
-    input_flags.format(**inputs)
+input_flags = input_flags.format(**inputs)
 
 # Get output dir name from output path where spades writes its output files.
 # Pick output dir from the first output file path.
