@@ -13,10 +13,7 @@ print(*snakemake.input)
 print("Directing to dict")
 inputs = dict(snakemake.input)
 print(*inputs)
-print(**inputs)
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
-print(type(snakemake.input.pe1))
-inputs = snakemake.input.pe1
 print(inputs.keys())
 print(inputs.values())
 ##assert type(inputs) == type({}), "Input is not a dictionary. " + input_error_msg
