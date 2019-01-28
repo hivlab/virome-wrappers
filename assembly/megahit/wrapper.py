@@ -7,10 +7,11 @@ from snakemake.shell import shell
 from os.path import dirname
 
 # Check inputs/arguments.
-inputs = dict(snakemake.input)
+print(snakemake.input.pe1)
+print(snakemake.input.pe2)
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
-print(inputs)
-print(type(inputs))
+print(type(snakemake.input.pe1))
+inputs = snakemake.input.pe1
 print(inputs.keys())
 print(inputs.values())
 ##assert type(inputs) == type({}), "Input is not a dictionary. " + input_error_msg
