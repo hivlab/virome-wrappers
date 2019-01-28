@@ -42,7 +42,7 @@ outdir = dirname(snakemake.output[0])
 print("Output dir is ", outdir)
 
 # Setup log
-log = snakemake.log_fmt_shell(stdout = True, stderr = True)
+log = snakemake.log_fmt_shell(stdout = False, stderr = True)
 
 shell("mkdir -p {outdir}")
 shell("(megahit {options} -t {snakemake.threads} {input_flags} -o {outdir}) {log}")
