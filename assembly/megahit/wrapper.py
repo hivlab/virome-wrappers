@@ -7,7 +7,7 @@ from snakemake.shell import shell
 from os.path import dirname
 
 # Check inputs/arguments.
-inputs = snakemake.input.get()
+inputs = snakemake.input.get("pe1")
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
 print(inputs)
 print(type(inputs))
