@@ -31,11 +31,8 @@ else:
         "c) one omma-separated list named 'se' of fasta/q single-end files.")
 
 # Merge input paths with flags
-print(inputs.items())
-inputs.update((k, ",".join(v)) for k,v in inputs.items())
-print(inputs)
+inputs.update((k, ",".join(v if type(v) == type([]) else [v])) for k,v in inputs.items())
 input_flags = input_flags.format(**inputs)
-
 print("Input flags:", input_flags)
 
 # Get output dir name from output path where spades writes its output files.
