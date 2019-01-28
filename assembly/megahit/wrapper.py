@@ -9,6 +9,8 @@ from os.path import dirname
 # Check inputs/arguments.
 print(snakemake.input.pe1)
 print(snakemake.input.pe2)
+print(*snakemake.input)
+print(**snakemake.input)
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
 print(type(snakemake.input.pe1))
 inputs = snakemake.input.pe1
