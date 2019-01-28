@@ -8,7 +8,7 @@ from os.path import dirname
 
 # Check inputs/arguments.
 inputs = dict(snakemake.input)
-assert type(inputs) == type({}), "Input is not a dictionary. " + input_error_msg
+assert isinstance(inputs, type({})), "Input is not a dictionary. " + input_error_msg
 input_names = list(inputs.keys())
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
 assert any([input_names == ["pe1", "pe2"], input_names == "pe12", input_names == "se"]), input_error_msg
@@ -31,7 +31,7 @@ else:
         "c) one omma-separated list named 'se' of fasta/q single-end files.")
 
 # Merge input paths with flags
-inputs.update((k, ",".join(v if type(v) == type([]) else [v])) for k,v in inputs.items())
+inputs.update((k, ",".join(v if isinstance(v, type([])) else [v])) for k,v in inputs.items())
 input_flags = input_flags.format(**inputs)
 
 # Get output dir name from output path where spades writes its output files.
