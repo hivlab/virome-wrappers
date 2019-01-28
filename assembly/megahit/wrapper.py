@@ -31,7 +31,9 @@ else:
         "c) one omma-separated list named 'se' of fasta/q single-end files.")
 
 # Merge input paths with flags
+print(inputs.items())
 inputs.update((k, ",".join(v)) for k,v in inputs.items())
+print(inputs)
 input_flags = input_flags.format(**inputs)
 
 print("Input flags:", input_flags)
