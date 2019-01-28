@@ -45,4 +45,4 @@ print("Output dir is ", outdir)
 log = snakemake.log_fmt_shell(stdout = False, stderr = True)
 
 shell("mkdir -p {outdir}")
-shell("(./megahit {options} -t {snakemake.threads} {input_flags} -o {outdir}) {log}")
+shell("megahit {options} -t {snakemake.threads} {input_flags} -o {outdir}")
