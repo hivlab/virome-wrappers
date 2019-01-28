@@ -7,15 +7,7 @@ from snakemake.shell import shell
 from os.path import dirname
 
 # Check inputs/arguments.
-print(snakemake.input.pe1)
-print(snakemake.input.pe2)
-print(*snakemake.input)
-print("Directing to dict")
 inputs = dict(snakemake.input)
-print(*inputs)
-print(inputs.keys())
-print(list(inputs.keys()))
-print(inputs.values())
 assert type(inputs) == type({}), "Input is not a dictionary. " + input_error_msg
 input_names = list(inputs.keys())
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
@@ -42,14 +34,16 @@ else:
 inputs.update((k, ",".join(v)) for k,v in inputs.items())
 input_flags = input_flags.format(**inputs)
 
+print("Input flags:", input_flags)
+
 # Get output dir name from output path where spades writes its output files.
 # Pick output dir from the first output file path.
 # See megahit wiki https://github.com/voutcn/megahit/wiki.
-out_dir = dirname(snakemake.output[0])
-print("Output dir is ", output_dir)
+outdir = dirname(snakemake.output[0])
+print("Output dir is ", outdir)
 
 # Setup log
 log = snakemake.log_fmt_shell(stdout = True, stderr = True)
 
-shell("mkdir -p {output_dir}")
-shell("(megahit {options} -t {snakemake.threads} {input_flags} -o {out_dir}) {log}")
+shell("mkdir -p {outdir}")
+shell("(megahit {options} -t {snakemake.threads} {input_flags} -o {outdir}) {log}")
