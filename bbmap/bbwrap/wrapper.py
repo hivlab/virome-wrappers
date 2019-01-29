@@ -7,7 +7,7 @@ from snakemake.shell import shell
 
 # Check inputs/arguments.
 def arg_c(args):
-   """"Concatenates input/output arguments with names.""""
+   """Concatenates input/output arguments with names."""
    argdict = dict(args)
    argdict.update((k, k + "=" + v) for k,v in argdict.items())
    return " ".join(list(argdict.values()))
