@@ -16,7 +16,7 @@ assert any([input_names == ["pe1", "pe2"], input_names == "pe12", input_names ==
 # Extract arguments.
 options = snakemake.params.get("options", "")
 
-# Compose input flags
+# Compose input flags.
 if input_names == ["pe1", "pe2"]:
     input_flags = "-1 {pe1} -2 {pe2}"
 elif input_names == "pe12":
@@ -30,7 +30,7 @@ else:
         "b) one comma-separated list named 'pe12' of interleaved fasta/q paired-end files\n"
         "c) one omma-separated list named 'se' of fasta/q single-end files.")
 
-# Merge input paths with flags
+# Merge input paths with flags.
 inputs.update((k, ",".join(v if isinstance(v, type([])) else [v])) for k,v in inputs.items())
 input_flags = input_flags.format(**inputs)
 
@@ -39,7 +39,8 @@ input_flags = input_flags.format(**inputs)
 # See megahit wiki https://github.com/voutcn/megahit/wiki.
 outdir = dirname(snakemake.output[0])
 
-# Setup log
+# Setup log.
 log = snakemake.log_fmt_shell(stdout = False, stderr = True)
 
+# Run command.
 shell("(megahit {options} -f -t {snakemake.threads} {input_flags} -o {outdir}) {log}")
