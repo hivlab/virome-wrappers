@@ -14,7 +14,7 @@ assert input_names == ["ref", "in1", "in2"], input_error_msg
 
 # Merge input paths with flags.
 inputs.update((k, ",".join(v if isinstance(v, type([])) else [v])) for k,v in inputs.items())
-input_flags = "ref={ref} in1 = {in1} in2 = {in2}".format(**inputs)
+input_flags = "ref={ref} in1={in1} in2={in2}".format(**inputs)
 
 # Get optional flags.
 options = snakemake.params.get("options", "")
