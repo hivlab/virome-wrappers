@@ -5,18 +5,19 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 
-inputs = dict(snakemake.input)
-outputs = dict(snakemake.output)
-options = snakemake.params.get("options", "")
+def arg_c(args):
+   """"Concatenates input/output arguments with names.""""
+   argdict = dict(args)
+   argdict.update((k, k + "=" + v) for k,v in argdict.items())
+   return " ".join(list(argdict.values()))
 
-# Merge input and output paths with flags.
-inputs.update((k, k + "=" + v) for k,v in inputs.items())
-input_files = " ".join(list(inputs.values()))
-outputs.update((k, k + "=" + v) for k,v in outputs.items())
-output_files = " ".join(list(inputs.values()))
+# Get input/output and optional flags.
+inputs = arg_c(snakemake.input)
+outputs = arg_c(snakemake.output)
+options = snakemake.params.get("options", "")
 
 # Run command.
 shell("pileup.sh"
-      " {input_files}"
-      " {output_files}"
+      " {inputs}"
+      " {outputs}"
       " {options}")
