@@ -21,9 +21,9 @@ options = snakemake.params.get("options", "")
 
 # Run commands.
 shell("bbwrap.sh"
-      "{input_flags}"
-      "out={snakemake.output.aln}"
-      "{options}")
+      " {input_flags}"
+      " out={snakemake.output.aln}"
+      " {options}")
 shell("pileup.sh"
-      "in={snakemake.output.aln}"
-      "out={snakemake.output.cov}")
+      " in={snakemake.output.aln}"
+      " out={snakemake.output.cov}")
