@@ -9,8 +9,11 @@ from snakemake.shell import shell
 def arg_c(args):
    """"Concatenates input/output arguments with names.""""
    argdict = dict(args)
-   argdict.update((k, k + "=" + v) for k,v in argdict.items())
+   argdict.update((k, k + "=" + v if len(k) > 0 else "in=" + v) for k,v in argdict.items())
    return " ".join(list(argdict.values()))
+
+# Check that input has only max one unnamed argument.
+assert sum([len(k) == 0 for k in list(input.keys())]) <= 1, "Unnamed input is reserved for 'in' argument. Please see bbmap.sh help for available arguments."
 
 # Get input/output and optional flags.
 inputs = arg_c(snakemake.input)
