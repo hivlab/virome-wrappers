@@ -18,7 +18,9 @@ assert sum([len(k) == 0 for k in list(argdict.keys())]) <= 1, "Unnamed input is 
 
 # Get input/output and optional flags.
 inputs = arg_c(snakemake.input)
+print(inputs)
 outputs = arg_c(snakemake.output)
+print(outputs)
 options = snakemake.params.get("options", "")
 
 # Run command.
