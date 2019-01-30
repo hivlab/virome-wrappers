@@ -5,7 +5,7 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 
-# Check inputs/arguments.
+# Parse inputs/arguments.
 def arg_c(args):
    """Concatenates input/output arguments with names."""
    argdict = dict(args)
@@ -14,12 +14,12 @@ def arg_c(args):
 
 # Get input/output and optional flags.
 if isinstance(snakemake.input, str) and len(snakemake.input) == 1:
-   inputs = snakemake.input
+   inputs = "in=" + snakemake.input
 else:
    inputs = arg_c(snakemake.input)
-   assert len(input) > 0, "Input error. Input can have only one unnamed value assigned to variable 'in'. All other inputs must be named."
 
 print(inputs)
+assert len(inputs) > 0, "Input error. Input can have only one unnamed value assigned to variable 'in'. All other inputs must be named."
 outputs = arg_c(snakemake.output)
 options = snakemake.params.get("options", "")
 
