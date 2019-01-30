@@ -14,7 +14,7 @@ def arg_c(args):
 
 # Get input/output and optional flags.
 if len(snakemake.input) == 1:
-   inputs = "in=" + snakemake.input
+   inputs = "in=" + str(snakemake.input)
 else:
    inputs = arg_c(snakemake.input)
 
