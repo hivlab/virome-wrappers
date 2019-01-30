@@ -5,25 +5,27 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 
-# Parse inputs/arguments.
+# Check inputs/arguments.
 def arg_c(args):
    """Concatenates input/output arguments with names."""
    argdict = dict(args)
-   argdict.update((k, k + "=" + v if len(k) > 0 else "in=" + v) for k,v in argdict.items())
+   argdict.update((k, k + "=" + v) for k,v in argdict.items())
    return " ".join(list(argdict.values()))
 
 # Get input/output and optional flags.
-if len(snakemake.input) == 1:
-   inputs = "in={}".format(snakemake.input)
-else:
-   inputs = arg_c(snakemake.input)
+# First see if we have unnamed values to 'in' argument.
+args = dict(snakemake.input)
+unnamed = [v for v in input if v not in set(args.values())]
 
-print("snakemake.input is {}".format(snakemake.input))
-print("Length of snakemake.input is {}".format(len(snakemake.input)))
-print("Print out inputs: {}".format(inputs))
+# Get named arguments.
+inputs = arg_c(snakemake.input)
 
-print("Asserting...")
-assert len(inputs) > 0, "Input error. Input can have only one unnamed value assigned to variable 'in'. All other inputs must be named."
+# Parse value for 'in' argument and merge with other named arguments. 
+assert len(unnamed) <= 1, "More than one value to 'in' argument."
+if len(unnamed) == 1:
+   input_to_in = "in={}".format(",".join(unnamed))
+   inputs = " ".join([inputs_to_in, inputs])
+
 outputs = arg_c(snakemake.output)
 options = snakemake.params.get("options", "")
 
