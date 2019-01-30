@@ -14,15 +14,13 @@ def arg_c(args):
 
 # Get input/output and optional flags.
 if len(snakemake.input) == 1:
-   inputs = "in=" + str(snakemake.input)
+   inputs = "in={}".format(snakemake.input)
 else:
    inputs = arg_c(snakemake.input)
 
-
-print("snakemake.input is " + str(snakemake.input))
-print("Length of snakemake.input is " + len(snakemake.input))
-print("Print out inputs:")
-print(inputs)
+print("snakemake.input is {}".format(snakemake.input))
+print("Length of snakemake.input is {}".format(len(snakemake.input)))
+print("Print out inputs: {}".format(inputs))
 
 print("Asserting...")
 assert len(inputs) > 0, "Input error. Input can have only one unnamed value assigned to variable 'in'. All other inputs must be named."
