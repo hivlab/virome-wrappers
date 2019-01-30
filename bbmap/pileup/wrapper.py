@@ -13,7 +13,8 @@ def arg_c(args):
    return " ".join(list(argdict.values()))
 
 # Check that input has only max one unnamed argument.
-assert sum([len(k) == 0 for k in list(input.keys())]) <= 1, "Unnamed input is reserved for 'in' argument. Please see pileup.sh help for available arguments."
+argdict = dict(snakemake.input)
+assert sum([len(k) == 0 for k in list(argdict.keys())]) <= 1, "Unnamed input is reserved for 'in' argument. Please see pileup.sh help for available arguments."
 
 # Get input/output and optional flags.
 inputs = arg_c(snakemake.input)
