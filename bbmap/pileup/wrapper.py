@@ -12,27 +12,15 @@ def arg_c(args):
    argdict.update((k, k + "=" + v if len(k) > 0 else "in=" + v) for k,v in argdict.items())
    return " ".join(list(argdict.values()))
 
-# Check that input has only max one unnamed argument.
-argdict = dict(snakemake.input)
-assert sum([len(k) == 0 for k in list(argdict.keys())]) <= 1, "Unnamed input is reserved for 'in' argument. Please see pileup.sh help for available arguments."
-
-print("Trying to debug.")
-print("Before update.")
-print(list(argdict.keys()))
-print([len(k) for k in list(argdict.keys())])
-print(list(argdict.values()))
-print([len(v) for v in list(argdict.values())])
-print("Updating.")
-argdict.update((k, k + "=" + v if len(k) > 0 else "in=" + v) for k,v in argdict.items())
-print("After update.")
-print(list(argdict.keys()))
-print(list(argdict.values()))
-
 # Get input/output and optional flags.
-inputs = arg_c(snakemake.input)
+if isinstance(snakemake.input, str) and len(snakemake.input) == 1:
+   inputs = snakemake.input
+else:
+   inputs = arg_c(snakemake.input)
+   assert len(input) > 0, "Input error. Input can have only one unnamed value assigned to variable 'in'. All other inputs must be named."
+
 print(inputs)
 outputs = arg_c(snakemake.output)
-print(outputs)
 options = snakemake.params.get("options", "")
 
 # Setup log.
