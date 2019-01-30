@@ -13,7 +13,7 @@ def arg_c(args):
    return " ".join(list(argdict.values()))
 
 # Get input/output and optional flags.
-if isinstance(snakemake.input, str) and len(snakemake.input) == 1:
+if len(snakemake.input) == 1:
    inputs = "in=" + snakemake.input
 else:
    inputs = arg_c(snakemake.input)
