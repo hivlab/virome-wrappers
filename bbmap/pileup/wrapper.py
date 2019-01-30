@@ -23,8 +23,11 @@ outputs = arg_c(snakemake.output)
 print(outputs)
 options = snakemake.params.get("options", "")
 
+# Setup log.
+log = snakemake.log_fmt_shell(stdout = False, stderr = True)
+
 # Run command.
-shell("pileup.sh"
+shell("(pileup.sh"
       " {inputs}"
       " {outputs}"
-      " {options}")
+      " {options}) {log}")
