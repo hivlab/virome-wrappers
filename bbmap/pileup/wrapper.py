@@ -19,7 +19,7 @@ else:
    inputs = arg_c(snakemake.input)
 
 
-print("snakemake.input is " + snakemake.input)
+print("snakemake.input is " + str(snakemake.input))
 print("Length of snakemake.input is " + len(snakemake.input))
 print("Print out inputs:")
 print(inputs)
