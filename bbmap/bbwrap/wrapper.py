@@ -22,7 +22,7 @@ inputs = arg_c(snakemake.input)
 
 # Parse values for 'in' argument and merge with other named arguments. 
 if len(unnamed) > 0:
-   input_to_in = "in={}".format(",".join(unnamed))
+   inputs_to_in = "in={}".format(",".join(unnamed))
    inputs = " ".join([inputs_to_in, inputs])
 
 outputs = arg_c(snakemake.output)
