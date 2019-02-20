@@ -33,6 +33,8 @@ url = os.path.join(base_url, "deposit/depositions/{}/files".format(deposition_id
 
 # Get info for remote files
 r = requests.get(url, params = access_token)
+if r.status_code != 200:
+      raise requests.HTTPError(f"Error in get request, status code: {r.status_code}")
 filename = [deposit["filename"] for deposit in r.json()]
 
 # Upload, if file is not present
