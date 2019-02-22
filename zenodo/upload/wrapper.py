@@ -32,24 +32,27 @@ session.hooks = {
 }
 
 # Get info for remote files.
-r = requests.get(url, params = access_token)
+r = session.get(url, params = access_token)
 filename = [deposit["filename"] for deposit in r.json()]
 
 # Create tar.gz file for upload
 zipfile = list(set([re.sub("_\d+", "", file) for file in files]))[0] + ".tar.gz"
+cmd = ["tar", "-cvzf", zipfile] + files
+p = Popen(cmd, stdout = PIPE, stderr = PIPE)
+stout, stderr = p.communicate()
+if p.returncode != 0:
+    errmsg = "%s. Code: %s" % (stderr.strip(), p.returncode)
+    raise Exception(errmsg)
 
 # Upload, if file is not present
 if os.path.basename(zipfile) not in filename:
-    cmd = ["tar", "-cvzf", zipfile] + files
-    p = Popen(cmd, stdout = PIPE, stderr = PIPE)
-    stout, stderr = p.communicate()
-    if p.returncode != 0:
-        errmsg = "%s. Code: %s" % (stderr.strip(), p.returncode)
-        raise Exception(errmsg)
-    else:
-        with open(zipfile, "rb") as handle:
-            r = requests.post(url, params = access_token,
-                                     data = {"filename": str(zipfile)},
-                                    files = {"file": handle})
+    with open(zipfile, "rb") as handle:
+        r = session.post(url, params = access_token, 
+                                 data = {"filename": str(zipfile)}, 
+                                files = {"file": handle})
 else:
-    print("Doing nothing. File {} is already uploaded!\nPlease delete local and remote copy of the file\nif you wish to upload new version.".format(os.path.basename(zipfile)))
+    print("Doing nothing."
+      " File {} is already uploaded!\n"
+      "Please delete local and remote copy of the file"
+      " if you wish to upload new version.".format(zipfile))
+    pass
