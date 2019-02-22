@@ -44,7 +44,7 @@ session.hooks = {
 r = session.get(url, params = access_token)
 remotefiles = [{"filename": i["filename"], "checksum": i["checksum"], "id": i["id"]} for i in r.json()]
 
-# Create tar.gz file for upload
+# Create tar.gz file for upload.
 zipfile = list(set([re.sub("_\d+", "", file) for file in files]))[0] + ".tar.gz"
 cmd = ["tar", "-cvzf", zipfile] + files
 p = Popen(cmd, stdout = PIPE, stderr = PIPE)
@@ -53,25 +53,30 @@ if p.returncode != 0:
     errmsg = "%s. Code: %s" % (stderr.strip(), p.returncode)
     raise Exception(errmsg)
 
-# Calculate checksum
+# Calculate checksum.
 checksum = md5(zipfile)
 
-# Check if zipfile or checksum present in remotefiles
+# Check if zipfile or checksum present in remotefiles.
 remotefile = [i for i in remotefiles if os.path.basename(zipfile) in i["filename"] or checksum in i["checksum"]]
 
-# Upload, if file is not present
+# Upload, if file is not present.
+# Needs to be tested what happens if we have same checksum under different file names.
 if len(remotefile) == 0:
+    print("Uploading {} to Zenodo.".format(zipfile))
     with open(zipfile, "rb") as handle:
         r = session.post(url, params = access_token, 
                                 data = {"filename": str(zipfile)}, 
                                files = {"file": handle})
-elif remotefile[0]["checksum"] == checksum and remotefile[0]["filename"] != os.path.basename(zipfile):
-    # Rename if checksum matches but not filename
+elif remotefile[0]["checksum"] == checksum and remotefile[0]["filename"] != remotefile[0]["filename"]:
+    # Rename if checksum matches but not filename.
+    print("Renaming {} to {}.".format(remotefile[0]['filename'], remotefile[0]['filename']))
     r = session.put(os.path.join(url, remotefile[0]["id"]), 
                           params = access_token, 
                             data = {"filename": str(zipfile)})
 elif remotefile[0]["checksum"] != checksum and remotefile[0]["filename"] == os.path.basename(zipfile):
-    # File checksum does not match, delete remote file and upload fresh one
+    # File checksum does not match, delete remote file and upload fresh one.
+    print("Deleting remote file {} with checksum {}"
+          " and replacing it with new file with checksum {}.".format(remotefile[0]["filename"], remotefile[0]["checksum"], checksum))
     r = session.delete(os.path.join(url, remotefile[0]["id"]), 
                           params = access_token)
     with open(zipfile, "rb") as handle:
