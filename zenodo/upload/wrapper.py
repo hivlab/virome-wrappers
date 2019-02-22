@@ -12,40 +12,44 @@ from subprocess import Popen, PIPE
 if not os.environ["ZENODO_PAT"]:
       raise ValueError("Missing ZENODO_PAT environment variable with zenodo API access token!")
 
-# Setup access token
+# Setup access token.
 access_token = {"access_token": os.environ["ZENODO_PAT"]}
 
-# Upload depository id
+# Upload depository id.
 deposition_id = snakemake.params[0]
 
-# Input files
+# Input files.
 files = snakemake.input
 
-# Create tar.gz file for upload
-zipfile = list(set([re.sub("_\d+", "", file) for file in files]))[0] + ".tar.gz"
-cmd = ["tar", "-cvzf", zipfile] + files
-p = Popen(cmd, stdout = PIPE, stderr = PIPE)
-stout, stderr = p.communicate()
-
-# Compose files query and upload url
+# Compose files query and upload url.
 base_url = "https://zenodo.org/api"
 url = os.path.join(base_url, "deposit/depositions/{}/files".format(deposition_id))
 
-# Get info for remote files
+# Get info for remote files.
 r = requests.get(url, params = access_token)
 if r.status_code != 200:
-      raise requests.HTTPError(f"Error in get request, status code: {r.status_code}")
-filename = [deposit["filename"] for deposit in r.json()]
+    raise requests.HTTPError(f"Error in get request, status code: {r.status_code}")
+else:
+    filename = [deposit["filename"] for deposit in r.json()]
+
+# Create tar.gz file for upload
+zipfile = list(set([re.sub("_\d+", "", file) for file in files]))[0] + ".tar.gz"
 
 # Upload, if file is not present
 if os.path.basename(zipfile) not in filename:
-    with open(zipfile, "rb") as handle:
-        r = requests.post(url, params = access_token,
-                          data = {"filename": str(zipfile)},
-                          files = {"file": handle})
-
+    cmd = ["tar", "-cvzf", zipfile] + files
+    p = Popen(cmd, stdout = PIPE, stderr = PIPE)
+    stout, stderr = p.communicate()
+    if p.returncode != 0:
+        errmsg = "%s. Code: %s" % (stderr.strip(), p.returncode)
+        raise Exception(errmsg)
+    else:
+        with open(zipfile, "rb") as handle:
+            r = requests.post(url, params = access_token,
+                                     data = {"filename": str(zipfile)},
+                                    files = {"file": handle})
         if r.status_code != 201:
-                raise requests.HTTPError(f"Error in data upload, status code: {r.status_code}")
-
+            raise requests.HTTPError(f"Error in data upload, status code: {r.status_code}")
 else:
     print("Doing nothing. File {} is already uploaded!\nPlease delete local and remote copy of the file\nif you wish to upload new version.".format(os.path.basename(zipfile)))
+            
