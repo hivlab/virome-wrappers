@@ -2,6 +2,9 @@ name: bbtools
 channels:
   - agbiome
   - conda-forge
+  - bioconda
   - defaults
 dependencies:
+  - java-jdk
+  - samtools
   - bbtools
