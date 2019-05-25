@@ -4,7 +4,6 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - sambamba
   - samtools
   - bbmap=38.49
   - openjdk=8.0.152
