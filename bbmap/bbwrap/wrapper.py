@@ -12,9 +12,16 @@ def arg_c(args):
    argstr = " ".join(arglist)
    return argstr
 
-# Get arguments.
+# Get inputs.
 inputs = arg_c(snakemake.input)
+
+# Replace 'input' with 'in'
+inputs = inputs.replace("input", "in")
+
+# Get outputs.
 outputs = arg_c(snakemake.output)
+
+# Get extra arguments.
 extra = snakemake.params.get("extra", "")
 
 # Setup log.
