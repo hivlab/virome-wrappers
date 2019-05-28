@@ -20,11 +20,10 @@ cov = pd.read_csv(snakemake.input.coverage, sep = "\t")
 good_coverage = cov["Avg_fold"] >= float(coverage)
 cov_filtered = cov[good_coverage]
 ids = list(cov_filtered["#ID"])
-print(len(ids))
+print("We have {} contigs".format(len(ids)))
 
 # Subset contigs fasta
 with open(snakemake.input.contigs, 'rU') as input_handle, open(snakemake.output[0], 'w') as output_handle:
     for contig in SeqIO.parse(input_handle, 'fasta'):
         if contig.description in ids:
-            print(contig)
             SeqIO.write(contig, output_handle, 'fasta')
