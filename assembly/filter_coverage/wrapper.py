@@ -7,8 +7,11 @@ import pandas as pd
 from Bio import SeqIO
 
 # Filter contigs table by coverage
+coverage = snakemake.params.get("avg_coverage", 2)
+
+# Import coverage table
 cov = pd.read_table(snakemake.input.coverage)
-good_coverage = cov["Avg_fold"] >= snakemake.params.avg_coverage
+good_coverage = cov["Avg_fold"] >= float(coverage)
 cov_filtered = cov[good_coverage]
 ids = list(cov_filtered["#ID"])
 
