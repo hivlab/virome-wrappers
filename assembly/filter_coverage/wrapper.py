@@ -22,7 +22,7 @@ cov_filtered = cov[good_coverage]
 ids = list(cov_filtered["#ID"])
 
 # Subset contigs fasta
-with open(snakemake.input.contigs, 'rU') as input_fasta, open(snakemake.output, 'w') as filtered_fasta:
+with open(snakemake.input.contigs, 'rU') as input_fasta, open(snakemake.output[0], 'w') as filtered_fasta:
     for contig in SeqIO.parse(input_fasta, 'fasta'):
         if contig.name in ids:
             SeqIO.write(contig, filtered_fasta, 'fasta')
