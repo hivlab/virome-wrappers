@@ -1,0 +1,11 @@
+channels:
+  - r
+  - conda-forge
+  - defaults
+dependencies:
+  - r-base
+  - r-dplyr
+  - r-tidyr
+  - r-purrr
+  - r-readr
+  - r-magrittr
