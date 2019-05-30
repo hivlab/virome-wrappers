@@ -31,20 +31,23 @@ parse_taxonomy <- function(input, output) {
     ungroup %>%
     distinct()
   
-  message("Filter by taxon abundance\n
-  Calculating weighted taxon counts for group tax-per-query")
+  message("Filtering by taxon abundance\n
+  Calculating taxon counts for whole run and in case of queries with multiple tax_ids\n
+  selecting the most abundant.")
   abun_top_queries <- unique_top_queries %>%
     add_count(tax_id) %>%
     group_by(query) %>%
     top_n(1, n)
   
-  message("Summarising number of taxons by query.\n")
+  message("We have still queries with multiple tax_ids.\n
+  Let's assign them parent_tax_id.\n
+  Summarising number of taxons by query.\n")
   per_query <- abun_top_queries %>%
     select(query, tax_id) %>%
     distinct() %>%
     count(query)
-  
-  message("List of queries with multiple tax_ids but unique parent_taxi_id.\n")
+
+  message("Getting list of queries with multiple tax_ids but unique parent_taxi_id.\n")
   distinct_parent_taxid <- per_query %>%
     filter(n > 1) %>%
     left_join(abun_top_queries) %>%
@@ -54,7 +57,8 @@ parse_taxonomy <- function(input, output) {
     filter(n == 1) %>%
     pull(query)
   
-  message("Assigning parent_tax_id to tax_id for queries with multiple tax_ids but unique parent_taxi_id\n
+  message("Assigning parent_tax_id to tax_id for queries with multiple tax_ids\
+  but unique parent_taxi_id\n
   Dropping ambiguous queries.\n")
   unique_queries <- abun_top_queries %>%
     ungroup() %>%
@@ -68,7 +72,10 @@ parse_taxonomy <- function(input, output) {
     filter(n == 1) %>%
     select(query, tax_id)
 
+  message("Writing output.")
   write_csv(unique_queries, output)
+  
+  return("Done!")
 }
 
-parse_taxonomy(input = snakemake@input, output = snakemake@output)
+parse_taxonomy(input = snakemake@input, output = snakemake@output[0])
