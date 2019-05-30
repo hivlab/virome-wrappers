@@ -23,32 +23,27 @@ parse_taxonomy <- function(input, output) {
   top_queries <- queries %>%
     group_by(query) %>%
     filter(dplyr::min_rank(evalue) == 1, dplyr::min_rank(desc(pident)) == 1)
-
-  #' Selecting only query and assigned taxons
-  unamb_top_queries <- top_queries %>%
-    select(query, tax_id, parent_tax_id)
-
+  
   #' Select rows with unique query tax_id combinations.
-  unique_top_queries <- unamb_top_queries %>%
+  unique_top_queries <- top_queries %>%
+    select(query, tax_id, parent_tax_id) %>% 
     ungroup %>%
     distinct()
-
+  
   #' Filter by taxon abundance
   #' Calculate weighted taxon counts for group
   #+ tax-per-query
   abun_top_queries <- unique_top_queries %>%
-    add_count(query, tax_id) %>%
-    group_by(tax_id) %>%
-    mutate(tax_per_sample = sum(n)) %>%
+    add_count(tax_id) %>%
     group_by(query) %>%
-    top_n(1, tax_per_sample)
-
+    top_n(1, n)
+  
   #' Summarise number of taxons by query.
   per_query <- abun_top_queries %>%
     select(query, tax_id) %>%
     distinct() %>%
     count(query)
-
+  
   #' List of queries with multiple tax_ids but unique parent_taxi_id
   distinct_parent_taxid <- per_query %>%
     filter(n > 1) %>%
@@ -56,10 +51,9 @@ parse_taxonomy <- function(input, output) {
     select(query, parent_tax_id) %>%
     distinct() %>%
     count(query) %>%
-    arrange(desc(n)) %>%
     filter(n == 1) %>%
     pull(query)
-
+  
   #' Assigning parent_tax_id to tax_id for queries with multiple tax_ids but unique parent_taxi_id
   #' Dropping ambiguous queries
   unique_queries <- abun_top_queries %>%
