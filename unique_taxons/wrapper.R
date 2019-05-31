@@ -1,6 +1,6 @@
 
 
-stopifnot(length(snakemake@output) == 1)
+stopifnot(length(snakemake@output) == 1, is.character(snakemake@output[1]))
 
 message("Loading libraries.")
 library(dplyr)
@@ -78,4 +78,4 @@ parse_taxonomy <- function(input, output) {
   return("Done!")
 }
 
-parse_taxonomy(input = snakemake@input, output = snakemake@output[0])
+parse_taxonomy(input = snakemake@input, output = snakemake@output[1])
