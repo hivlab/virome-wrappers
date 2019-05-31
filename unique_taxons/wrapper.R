@@ -1,7 +1,4 @@
 
-
-stopifnot(length(snakemake@output) == 1, is.character(snakemake@output[[1]]))
-
 message("Loading libraries.")
 library(dplyr)
 library(readr)
@@ -74,8 +71,6 @@ parse_taxonomy <- function(input, output) {
 
   message("Writing output.")
   write_csv(unique_queries, output)
-  
-  return("Done!")
 }
 
-parse_taxonomy(input = snakemake@input, output = snakemake@output[[1]])
+parse_taxonomy(input = snakemake@input, output = unlist(snakemake@output))
