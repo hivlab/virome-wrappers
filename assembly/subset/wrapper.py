@@ -8,4 +8,4 @@ def subset_records(virids, contigs, output):
             if record.id.split()[0] in ids:
                 SeqIO.write(record, output_handle, 'fasta')
 
-subset_records(snakemake.input**, snakemake.output**)
+subset_records(snakemake.input["virids"], snakemake.input["contigs"], snakemake.output[0])
