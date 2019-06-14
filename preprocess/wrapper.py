@@ -26,4 +26,4 @@ for cmd in commands:
 if frac and frac < 1:
   shell("reformat.sh in={snakemake.output.trimmed} out={snakemake.output.sampled} samplerate={frac} sampleseed={seed}")
 else:
-  shell("ln -sr {snakemake.output.trimmed} {snakemake.output.sampled}")
+  shell("cp {snakemake.output.trimmed} {snakemake.output.sampled}")

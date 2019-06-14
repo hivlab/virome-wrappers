@@ -11,14 +11,14 @@ def subset_records(source, ids):
         if record.id in ids:
             yield record
 
-# Ref genome unmapped reads
-unmapped = SeqIO.parse(snakemake.input[0], "fasta")
+# Parse fasta
+fasta = SeqIO.parse(snakemake.input[0], "fasta")
 
-# Get unmapped sequence ids
-unmapped_ids = get_ids(unmapped)
+# Get fasta ids
+fasta_ids = get_ids(fasta)
 
-# Subset masked sequences using unmapped_ids
-masked = subset_records(SeqIO.parse(snakemake.input[1], "fasta"), unmapped_ids)
+# Subset another fasta using fasta_ids
+subset = subset_records(SeqIO.parse(snakemake.input[1], "fasta"), fasta_ids)
 
-# Write unmasked subset to file
-masked_count = SeqIO.write(masked, snakemake.output[0], 'fasta')
+# Write subset to a file
+subset_count = SeqIO.write(subset, snakemake.output[0], 'fasta')
