@@ -1,19 +1,35 @@
 import pandas as pd
 import subprocess
 from ete3 import NCBITaxa
-from sklearn.cluster import SpectralClustering
 import numpy as np
 import json
+import sys
+from itertools import islice
+
+assert(sys.argv[1], "Please supply array index number!")
+chunk = sys.argv[1]
 
 ncbi = NCBITaxa()
 
-blast = pd.read_csv("~/Downloads/queries.csv", index_col = "query", nrows = 100)
-print(blast)
+blast = pd.read_csv("~/Downloads/queries.csv", index_col = "query", nrows = 50)
 by_query = blast.groupby("query")
 pp_sway = 1
 
-cons_tax = []
-with open("consensus_taxonomy.csv", )
+def chunks(data, n_chunks = 100):
+    it = iter(data)
+    size = len(data) // n_chunks
+    for i in range(0, len(data), size):
+        yield {k:data[k] for k in islice(it, size)}
+
+for count, item in enumerate(chunks(by_query.indices, 3), 1):
+    if count is 3:
+        print(count, [*item])
+        print(blast.loc[[*item],])
+
+def assign_consensus_taxonomy(blast_dataframe):
+
+
+consensus_taxonomy = []
 for query, hits in by_query:
     print(query)
     if hits.shape[0] > 1:
@@ -39,6 +55,6 @@ for query, hits in by_query:
     for tax in con_lin:
         ranks.append(ncbi.get_rank(tax))
         names.append(ncbi.get_taxid_translator(tax))
-    df = pd.DataFrame([{"query": query, "consensus": consensus[0], "hits": hits.shape[0], "rank": json.dumps(ranks), "names": json.dumps(names)}])
-    df.to_csv()
+    consensus_taxonomy.append({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0], "rank": json.dumps(ranks), "names": json.dumps(names)})
 
+pd.DataFrame(consensus_taxonomy).to_csv("~/Downloads/consensus_taxonomy.csv", index = False)
