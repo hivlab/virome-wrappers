@@ -86,10 +86,10 @@ gi2taxid.blast_tabular <- function(tab, taxdb) {
   message("Join taxonomy to blast results by gi")
   known <- dplyr::left_join(tab, gi_tab)
 
-  message("Fill in few missing tax_ids by quering remote ncbi database")
   with_taxid <- dplyr::filter(known, !is.na(tax_id))
   no_taxid <- dplyr::filter(known, is.na(tax_id))
 
+  message(paste("Fill in", nrow(no_taxid)," missing tax_ids by quering remote ncbi database"))
   query <- dplyr::mutate(no_taxid, tax_id = get_taxid(gi)) %>%
     dplyr::select(gi, tax_id) %>%
     dplyr::mutate_at("tax_id", as.integer)
