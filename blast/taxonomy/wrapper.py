@@ -12,7 +12,7 @@ from itertools import islice
 #print("Total number of chunks is {}".format(n_chunks))
 out_prefix="consensus_taxonomy"
 n_chunks=3
-chunk=1
+chunk=2
 
 # Create ncbi taxonomy query object
 ncbi = NCBITaxa()
@@ -28,16 +28,13 @@ TAXONOMIC_RANKS = [ "no rank",
                     "kingdom",
                     "superkingdom"]
 
-# Dictionary that maps the rank to an integer,
-# the lowest is "no rank": 0
-NUMERIC_RANK = {TAXONOMIC_RANKS[i]: i for i in range(len(TAXONOMIC_RANKS))}
-
 # Unknown rank
 UNKNOWN_RANK = 'unknown'
 
-# NCBI taxid representing unknown taxon
-UNIDENTIFIED = 32644
+# Taxonomic ranks of interest
+RANKS_OF_INTEREST = ['superkingdom', 'order', 'family', 'genus', 'species']
 
+# Import parsed and evalue filtered BLAST+ results
 blast = pd.read_csv("~/Downloads/queries.csv", index_col = "query", nrows = 50)
 by_query = blast.groupby("query")
 pp_sway = 1
@@ -48,7 +45,38 @@ def chunks(data, n_chunks = 100):
     for i in range(0, len(data), size):
         yield {k:data[k] for k in islice(it, size)}
 
-#def assign_consensus_taxonomy(blast_df, pp_sway, id, out_prefix):
+def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
+    
+    # Dictionary that maps taxonomic ranks to integers,
+    # the lowest is "no rank": 0
+    numeric_rank = {taxonomic_ranks[i]: i for i in range(len(taxonomic_ranks))}
+    unidentified = 32644
+
+    # Get lineage for taxid and map it to numeric rank
+    lineage = ncbi.get_lineage(taxid)
+    _, rank_of_query = ncbi.get_rank([taxid]).popitem()
+    num_rank_of_query = numeric_rank[rank_of_query]
+    ranks = ncbi.get_rank(lineage)
+    invert_dict = {v: k for k, v in ranks.items()}
+    lineage_ranks = invert_dict.keys()
+    
+    # Get ranks and taxids
+    # if rank is not present in lineage, say is unidentified
+    normalised_lineage = dict()
+    for rank in ranks_of_interest:
+        num_rank_to_get = numeric_rank[rank]
+        # must be above taxid in hierarchy
+        if num_rank_to_get >= num_rank_of_query:
+            if rank in lineage_ranks:
+                normalised_lineage[rank] = invert_dict[rank]
+            else:
+                normalised_lineage[rank] = unidentified
+    
+    # Reverse dictionary back
+    rev_normalised_lineage = {v: k for k, v in normalised_lineage.items()}
+    return(rev_normalised_lineage)
+
+# def assign_consensus_taxonomy(blast_df, pp_sway, id, out_prefix):
 consensus_taxonomy = []
 for query, hits in by_query:
     if hits.shape[0] > 1:
@@ -59,16 +87,15 @@ for query, hits in by_query:
         taxlist = hits_filtered["tax_id"].tolist()
         lineage = []
         for tax in taxlist:
-            lineage.append(set(ncbi.get_lineage(tax)))
-            lineage_intersect = list(set.intersection(*lineage))
-            root_tree = ncbi.get_topology(lineage_intersect)
-            consensus = root_tree.get_leaf_names()
-            assert(len(consensus) == 1)
+            normalised_lineage = get_normalised_lineage(tax, ranks_of_interest=RANKS_OF_INTEREST, taxonomic_ranks=TAXONOMIC_RANKS)
+            lineage.append(set(normalised_lineage))
+        lineage_intersect = list(set.intersection(*lineage))
+        root_tree = ncbi.get_topology(lineage_intersect)
+        consensus = root_tree.get_leaf_names()
     else:
         consensus = hits["tax_id"].tolist()
-    con_lin = []
-    for tax in consensus:
-        con_lin.append(ncbi.get_lineage(tax))
+    assert(len(consensus) == 1, "Ups! More than one taxon in consensus taxon assignment.")
+    con_lin = get_normalised_lineage(consensus[0], ranks_of_interest=RANKS_OF_INTEREST, taxonomic_ranks=TAXONOMIC_RANKS)
     ranks = []
     names = []
     for tax in con_lin:
