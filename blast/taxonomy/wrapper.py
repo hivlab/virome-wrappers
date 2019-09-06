@@ -5,11 +5,19 @@ import numpy as np
 import json
 import sys
 from itertools import islice
+import argparse
 
-chunk = int(sys.argv[1])
-print("Working on chunk nr {}".format(chunk))
-n_chunks = int(sys.argv[2])
-print("Total number of chunks is {}".format(n_chunks))
+parser = argparse.ArgumentParser(description = 'Process BLAST+ taxonomy in chunks.')
+parser.add_argument('--infile', dest = "filename", type = argparse.FileType('r'), 
+                required=True,
+                   help='path to input file with BLAST results')
+parser.add_argument("-i", dest = 'index', type = int, nargs = 1,
+                    required=True,
+                   help = 'array index, an integer')
+parser.add_argument("-s", dest = 'size', type = int, nargs = 1,
+                   required=True, help = 'array size, an integer')
+
+args = parser.parse_args()
 
 # Output file prefix
 out_prefix = "consensus_taxonomy"
@@ -32,19 +40,15 @@ TAXONOMIC_RANKS = [ "no rank",
 UNKNOWN_RANK = 'unknown'
 UNIDENTIFIED = 32644
 
+# Percent point of difference from maximum identity hit
+pp_sway = 1
+
 # Taxonomic ranks of interest
 RANKS_OF_INTEREST = ['superkingdom', 'order', 'family', 'genus', 'species']
 
-# Import parsed and evalue filtered BLAST+ results
-blast = pd.read_csv("~/Downloads/queries.csv", index_col = "query", nrows = 50)
-by_query = blast.groupby("query")
-pp_sway = 1
-
-def chunks(data, n_chunks = 100):
-    it = iter(data)
-    size = len(data) // n_chunks - 1
-    for i in range(1, len(data), size):
-        yield {k:data[k] for k in islice(it, size)}
+def split(x, n):
+    k, m = divmod(len(x), n)
+    return (x[i * k + min(i, m): (i + 1) * k + min(i + 1, m)] for i in range(n))
 
 def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
     
@@ -75,7 +79,7 @@ def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
 
     return(normalised_lineage)
 
-def assign_consensus_taxonomy(blast_df, pp_sway, id, out_prefix, **kwargs):
+def assign_consensus_taxonomy(blast_df, pp_sway, out_prefix, **kwargs):
     consensus_taxonomy = []
     for query, hits in blast_df.groupby("query"):
         if hits.shape[0] > 1:
@@ -102,8 +106,14 @@ def assign_consensus_taxonomy(blast_df, pp_sway, id, out_prefix, **kwargs):
         consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
     pd.DataFrame(consensus_taxonomy).to_csv("{}_{}.csv".format(out_prefix, chunk), index = False)
 
-for count, item in enumerate(chunks(by_query.indices, n_chunks), 1):
-    if count is chunk:
-        assign_consensus_taxonomy(blast.loc[[*item]], pp_sway, count, "consensus_taxonomy", ranks_of_interest = RANKS_OF_INTEREST, taxonomic_ranks = TAXONOMIC_RANKS)
+# Import parsed and evalue filtered BLAST+ results
+blast = pd.read_csv(args.filename, index_col = "query", nrows = 50)
+by_query = blast.groupby("query")
+queries = [by_query.indices]
 
+# Split queries into n chunks
+query_chunks = list(split(queries, args.size[0]))
 
+# Process one chunk
+queries_to_process = query_chunks[args.index[0] - 1]
+assign_consensus_taxonomy(blast.loc[queries_to_process], pp_sway, out_prefix, ranks_of_interest = RANKS_OF_INTEREST, taxonomic_ranks = TAXONOMIC_RANKS)
