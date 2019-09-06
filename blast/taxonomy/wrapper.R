@@ -87,6 +87,7 @@ gi2taxid.blast_tabular <- function(tab, taxdb) {
   known <- dplyr::left_join(tab, gi_tab)
 
   with_taxid <- dplyr::filter(known, !is.na(tax_id))
+  message("Queries without taxid")
   no_taxid <- dplyr::filter(known, is.na(tax_id))
 
   message(paste("Fill in", nrow(no_taxid)," missing tax_ids by quering remote ncbi database"))
@@ -94,9 +95,13 @@ gi2taxid.blast_tabular <- function(tab, taxdb) {
     dplyr::select(gi, tax_id) %>%
     dplyr::mutate_at("tax_id", as.integer)
 
+  message("Getting fixed taxids")
   fixed_taxid <- dplyr::full_join(dplyr::select(no_taxid, -tax_id), query)
+  message("Joining local and remote queries")
   blast_results_taxids <- dplyr::bind_rows(with_taxid, fixed_taxid)
+  message("Assigning class")
   class(blast_results_taxids) <- append(class(blast_results_taxids), "blast_results_taxids")
+  message("Returning result")
   return(blast_results_taxids)
 }
 
