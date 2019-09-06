@@ -6,13 +6,13 @@ import json
 import sys
 from itertools import islice
 
-#chunk = int(sys.argv[1])
-#print("We have chunk nr {}".format(chunk))
-#"n_chunks = int(sys.argv[2])
-#print("Total number of chunks is {}".format(n_chunks))
-out_prefix="consensus_taxonomy"
-n_chunks=3
-chunk=2
+chunk = int(sys.argv[1])
+print("Working on chunk nr {}".format(chunk))
+n_chunks = int(sys.argv[2])
+print("Total number of chunks is {}".format(n_chunks))
+
+# Output file prefix
+out_prefix = "consensus_taxonomy"
 
 # Create ncbi taxonomy query object
 ncbi = NCBITaxa()
@@ -28,8 +28,9 @@ TAXONOMIC_RANKS = [ "no rank",
                     "kingdom",
                     "superkingdom"]
 
-# Unknown rank
+# Unknown rank and unidentified taxid
 UNKNOWN_RANK = 'unknown'
+UNIDENTIFIED = 32644
 
 # Taxonomic ranks of interest
 RANKS_OF_INTEREST = ['superkingdom', 'order', 'family', 'genus', 'species']
@@ -41,8 +42,8 @@ pp_sway = 1
 
 def chunks(data, n_chunks = 100):
     it = iter(data)
-    size = len(data) // n_chunks
-    for i in range(0, len(data), size):
+    size = len(data) // n_chunks - 1
+    for i in range(1, len(data), size):
         yield {k:data[k] for k in islice(it, size)}
 
 def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
@@ -71,44 +72,38 @@ def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
                 normalised_lineage[rank] = invert_dict[rank]
             else:
                 normalised_lineage[rank] = unidentified
-    
-    # Reverse dictionary back
-    rev_normalised_lineage = {v: k for k, v in normalised_lineage.items()}
-    return(rev_normalised_lineage)
 
-# def assign_consensus_taxonomy(blast_df, pp_sway, id, out_prefix):
-consensus_taxonomy = []
-for query, hits in by_query:
-    if hits.shape[0] > 1:
-        hits = hits.sort_values(by = "evalue")
-        pident_threshold = hits["pident"].aggregate("max") - pp_sway
-        within = hits["pident"].apply(lambda x: x >= pident_threshold)
-        hits_filtered = hits[within]
-        taxlist = hits_filtered["tax_id"].tolist()
-        lineage = []
-        for tax in taxlist:
-            normalised_lineage = get_normalised_lineage(tax, ranks_of_interest=RANKS_OF_INTEREST, taxonomic_ranks=TAXONOMIC_RANKS)
-            lineage.append(set(normalised_lineage))
-        lineage_intersect = list(set.intersection(*lineage))
-        root_tree = ncbi.get_topology(lineage_intersect)
-        consensus = root_tree.get_leaf_names()
-    else:
-        consensus = hits["tax_id"].tolist()
-    con_lin = get_normalised_lineage(consensus[0], ranks_of_interest=RANKS_OF_INTEREST, taxonomic_ranks=TAXONOMIC_RANKS)
-    print(con_lin)
-    ranks = []
-    names = []
-    for tax in con_lin:
-        ranks.append(ncbi.get_rank(tax))
-        names.append(ncbi.get_taxid_translator(tax))
-consensus_taxonomy.append({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0], "rank": json.dumps(ranks), "names": json.dumps(names)})
+    return(normalised_lineage)
 
-pd.DataFrame(consensus_taxonomy).to_csv("{}_{}.csv".format(out_prefix, chunk), index = False)
+def assign_consensus_taxonomy(blast_df, pp_sway, id, out_prefix, **kwargs):
+    consensus_taxonomy = []
+    for query, hits in blast_df.groupby("query"):
+        if hits.shape[0] > 1:
+            hits = hits.sort_values(by = "evalue")
+            pident_threshold = hits["pident"].aggregate("max") - pp_sway
+            within = hits["pident"].apply(lambda x: x >= pident_threshold)
+            hits_filtered = hits[within]
+            taxlist = hits_filtered["tax_id"].tolist()
+            if len(taxlist) > 1:
+                lineage = []
+                for tax in taxlist:
+                    normalised_lineage = get_normalised_lineage(tax, **kwargs)
+                    rev_normalised_lineage = {v: k for k, v in normalised_lineage.items()}
+                    lineage.append(set(rev_normalised_lineage))
+                lineage_intersect = list(set.intersection(*lineage))
+                root_tree = ncbi.get_topology(lineage_intersect)
+                consensus = root_tree.get_leaf_names()
+            else:
+                consensus = taxlist
+        else:
+            consensus = hits["tax_id"].tolist()
+        con_lin = get_normalised_lineage(consensus[0], **kwargs)
+        print(con_lin)
+        consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
+    pd.DataFrame(consensus_taxonomy).to_csv("{}_{}.csv".format(out_prefix, chunk), index = False)
 
-#for count, item in enumerate(chunks(by_query.indices, n_chunks), 1):
-#    if count is chunk:
-#        print(count, [*item])
-#        print(blast.loc[[*item],])
-#        assign_consensus_taxonomy(blast.loc[[*item],], pp_sway, count, "consensus_taxonomy")
+for count, item in enumerate(chunks(by_query.indices, n_chunks), 1):
+    if count is chunk:
+        assign_consensus_taxonomy(blast.loc[[*item]], pp_sway, count, "consensus_taxonomy", ranks_of_interest = RANKS_OF_INTEREST, taxonomic_ranks = TAXONOMIC_RANKS)
 
 
