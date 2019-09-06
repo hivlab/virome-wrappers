@@ -94,8 +94,8 @@ for query, hits in by_query:
         consensus = root_tree.get_leaf_names()
     else:
         consensus = hits["tax_id"].tolist()
-    assert(len(consensus) == 1, "Ups! More than one taxon in consensus taxon assignment.")
     con_lin = get_normalised_lineage(consensus[0], ranks_of_interest=RANKS_OF_INTEREST, taxonomic_ranks=TAXONOMIC_RANKS)
+    print(con_lin)
     ranks = []
     names = []
     for tax in con_lin:
