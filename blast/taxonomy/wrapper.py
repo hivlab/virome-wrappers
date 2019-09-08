@@ -7,16 +7,17 @@ import sys
 from itertools import islice
 import argparse
 
-parser = argparse.ArgumentParser(description = 'Process BLAST+ taxonomy in chunks.')
-parser.add_argument('--infile', dest = "filename", type = argparse.FileType('r'), 
+parser = argparse.ArgumentParser(description = "Process BLAST+ taxonomy in chunks.")
+parser.add_argument("--infile", dest = "filename", type = argparse.FileType("r"), 
                 required=True,
-                   help='path to input file with BLAST results')
-parser.add_argument("-i", dest = 'index', type = int, nargs = 1,
+                   help = "Path to input file with BLAST results")
+parser.add_argument("-i", dest = "index", type = int, nargs = 1,
                     required=True,
-                   help = 'array index, an integer')
-parser.add_argument("-s", dest = 'size', type = int, nargs = 1,
-                   required=True, help = 'array size, an integer')
-
+                   help = "Array index, an integer")
+parser.add_argument("-s", dest = "size", type = int, nargs = 1,
+                   required = True, help = "Array size, an integer")
+parser.add_argument("--nrows", dest = "nrows", default = None,
+                    help = "Number of rows of file to read. Useful for reading pieces of large files.")
 args = parser.parse_args()
 
 # Output file prefix
@@ -51,7 +52,7 @@ def split(x, n):
     return (x[i * k + min(i, m): (i + 1) * k + min(i + 1, m)] for i in range(n))
 
 def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
-    
+    print(taxid)
     # Dictionary that maps taxonomic ranks to integers,
     # the lowest is "no rank": 0
     numeric_rank = {taxonomic_ranks[i]: i for i in range(len(taxonomic_ranks))}
@@ -59,7 +60,7 @@ def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
 
     # Get lineage for taxid and map it to numeric rank
     lineage = ncbi.get_lineage(taxid)
-    _, rank_of_query = ncbi.get_rank([taxid]).popitem()
+    _, rank_of_query = ncbi.get_rank([lineage[-1]]).popitem()
     num_rank_of_query = numeric_rank[rank_of_query]
     ranks = ncbi.get_rank(lineage)
     invert_dict = {v: k for k, v in ranks.items()}
@@ -102,14 +103,13 @@ def assign_consensus_taxonomy(blast_df, pp_sway, out_prefix, **kwargs):
         else:
             consensus = hits["tax_id"].tolist()
         con_lin = get_normalised_lineage(consensus[0], **kwargs)
-        print(con_lin)
         consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
-    pd.DataFrame(consensus_taxonomy).to_csv("{}_{}.csv".format(out_prefix, chunk), index = False)
+    pd.DataFrame(consensus_taxonomy).to_csv("{}_{}.csv".format(out_prefix, args.index[0]), index = False)
 
 # Import parsed and evalue filtered BLAST+ results
-blast = pd.read_csv(args.filename, index_col = "query", nrows = 50)
+blast = pd.read_csv(args.filename, index_col = "query", nrows = int(args.nrows) if args.nrows else args.nrows)
 by_query = blast.groupby("query")
-queries = [by_query.indices]
+queries = [*by_query.indices]
 
 # Split queries into n chunks
 query_chunks = list(split(queries, args.size[0]))
