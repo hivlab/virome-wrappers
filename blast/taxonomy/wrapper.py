@@ -1,4 +1,7 @@
 import pandas as pd
+from pkg_resources import parse_version
+if parse_version(pd.__version__) < parse_version("0.24.0"):
+    print("Warning pandas version is {} and taxon ids will be floating point numbers in results\nand column order is not preserved. To avoid this, please install pandas>=0.24.0.".format(pd.__version__))
 from ete3 import NCBITaxa
 import numpy as np
 import argparse
