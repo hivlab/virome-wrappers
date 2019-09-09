@@ -1,7 +1,6 @@
 import pandas as pd
 from pkg_resources import parse_version
-if parse_version(pd.__version__) < parse_version("0.24.0"):
-    print("Warning pandas version is {} and taxon ids will be floating point numbers in results\nand column order is not preserved. To avoid this, please install pandas>=0.24.0.".format(pd.__version__))
+import warnings
 from ete3 import NCBITaxa
 import numpy as np
 import argparse
@@ -9,6 +8,12 @@ import argparse
 def split(x, n):
     k, m = divmod(len(x), n)
     return (x[i * k + min(i, m): (i + 1) * k + min(i + 1, m)] for i in range(n))
+
+class pandasVersionWarning(UserWarning):
+    pass
+
+if parse_version(pd.__version__) < parse_version("0.24.0"):
+    warnings.warn("Pandas version is {} and taxon ids will be floating point numbers in results\nand column order is not preserved. To avoid this, please install pandas>=0.24.0.".format(pd.__version__), pandasVersionWarning)
 
 # Create BLAST BD and query classes
 class BlastDB:
@@ -52,7 +57,7 @@ class BlastDB:
 
 class BlastTaxonomy(BlastDB):
     
-    def __init__(self, results, pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None):
+    def __init__(self, results, pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None, verbose=False):
         
         BlastDB.__init__(self, dbfile)
         self.by_query = results.groupby("query") 
@@ -66,10 +71,13 @@ class BlastTaxonomy(BlastDB):
         else:
             self.taxonomic_ranks = [ "no rank", "species", "genus", "family", "order", "class", "phylum", "kingdom", "superkingdom"]
         self.unidentified = 32644
+        self.verbose = verbose
     
     def get_consensus_taxonomy(self):
+        verboseprint = print if self.verbose else lambda *a, **k: None
         consensus_taxonomy = []
         for query, hits in self.by_query:
+            verboseprint(query)
             if hits.shape[0] > 1:
                 pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
                 within = hits["pident"].apply(lambda x: x >= pident_threshold)
@@ -105,6 +113,7 @@ if __name__ == "__main__":
                     required = True, help = "Array size, an integer")
     parser.add_argument("--nrows", dest = "nrows", default = None,
                         help = "Number of rows of file to read. Useful for reading pieces of large files.")
+    parser.add_argument("--verbose", dest = "verbose", action = "store_true")
     args = parser.parse_args()
 
     # Output file prefix
@@ -122,7 +131,7 @@ if __name__ == "__main__":
 
     # Process one chunk
     queries_to_process = query_chunks[args.index[0] - 1]
-    bt = BlastTaxonomy(results.loc[queries_to_process])
+    bt = BlastTaxonomy(results.loc[queries_to_process], verbose=args.verbose)
     consensus_taxonomy = bt.get_consensus_taxonomy()
     consensus_taxonomy[["superkingdom", "order", "family", "genus", "species"]] = consensus_taxonomy[["superkingdom", "order", "family", "genus", "species"]].apply(lambda x: pd.Series(x, dtype="Int64"))
     consensus_taxonomy.to_csv("{}_{}.csv".format(out_prefix, args.index[0]), index = False)
