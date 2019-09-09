@@ -47,22 +47,12 @@ class BlastDB:
                     normalised_lineage[rank] = unidentified
         return normalised_lineage
 
-
-class BlastData:
-
-    def __init__(self, results, nrows = None):
-        self.results = pd.read_csv(results, index_col = "query", nrows = int(nrows) if nrows else nrows)[["gi", "pident", "evalue", "tax_id"]]
+class BlastTaxonomy(BlastDB):
     
-    def by_query(self):
-        return self.results.groupby("query")
-
-class BlastTaxonomy(BlastData, BlastDB):
-    
-    def __init__(self, results, pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None, nrows=None):
+    def __init__(self, results, pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None):
         
         BlastDB.__init__(self, dbfile)
-        BlastData.__init__(self, results, nrows)
-        
+        self.by_query = results.groupby("query") 
         self.pp_sway = pp_sway
         if ranks_of_interest:
             self.ranks_of_interest = ranks_of_interest
@@ -74,9 +64,9 @@ class BlastTaxonomy(BlastData, BlastDB):
             self.taxonomic_ranks = [ "no rank", "species", "genus", "family", "order", "class", "phylum", "kingdom", "superkingdom"]
         self.unidentified = 32644
     
-    def assign_consensus_taxonomy(self):
+    def get_consensus_taxonomy(self):
         consensus_taxonomy = []
-        for query, hits in self.by_query():
+        for query, hits in self.by_query:
             if hits.shape[0] > 1:
                 pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
                 within = hits["pident"].apply(lambda x: x >= pident_threshold)
@@ -117,20 +107,19 @@ if __name__ == "__main__":
     # Output file prefix
     out_prefix = "consensus_taxonomy"
     
-    # Get grouped data
-    bt = BlastTaxonomy(args.filename, nrows=args.nrows)
+    # Import file with BLAST results
+    results = pd.read_csv(args.filename, index_col = "query", nrows = int(args.nrows) if args.nrows else args.nrows)[["gi", "pident", "evalue", "tax_id"]]
     
     # Get query indices
-    by_query = bt.by_query()
+    by_query = results.groupby("query")
     queries = [*by_query.indices]
 
     # Split queries into n chunks
     query_chunks = list(split(queries, args.size[0]))
-    print(query_chunks)
 
     # Process one chunk
     queries_to_process = query_chunks[args.index[0] - 1]
-    print(queries_to_process)
-    consensus_taxonomy = bt.assign_consensus_taxonomy()
-    print(consensus_taxonomy)
+    bt = BlastTaxonomy(results.loc[queries_to_process])
+    consensus_taxonomy = bt.get_consensus_taxonomy()
+    consensus_taxonomy[["superkingdom", "order", "family", "genus", "species"]] = consensus_taxonomy[["superkingdom", "order", "family", "genus", "species"]].apply(lambda x: pd.Series(x, dtype="Int64"))
     consensus_taxonomy.to_csv("{}_{}.csv".format(out_prefix, args.index[0]), index = False)
