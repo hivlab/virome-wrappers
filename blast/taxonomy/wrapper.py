@@ -13,17 +13,25 @@ class BlastDB:
     def __init__(self, dbfile=None):
         self.ncbi = NCBITaxa(dbfile=dbfile)
     
-    def get_normalised_lineage(self, taxid, ranks_of_interest, taxonomic_ranks):
+    def get_lineage(self, taxid):
+        return self.ncbi.get_lineage(taxid)
+
+    def get_rank(self, taxids):
+        return self.ncbi.get_rank(taxids)
+    
+    def get_topology(self, lineage):
+        return self.ncbi.get_topology(lineage)
+
+    def get_normalised_lineage(self, taxid, ranks_of_interest, taxonomic_ranks, unidentified):
         # Dictionary that maps taxonomic ranks to integers,
         # the lowest is "no rank": 0
         numeric_rank = {taxonomic_ranks[i]: i for i in range(len(taxonomic_ranks))}
-        unidentified = 32644
         # Get lineage for taxid and map it to numeric rank
-        lineage = self.ncbi.get_lineage(taxid)
+        lineage = self.get_lineage(taxid)
         updated_taxid=[lineage[-1]]
-        _, rank_of_query = self.ncbi.get_rank(updated_taxid).popitem()
+        _, rank_of_query = self.get_rank(updated_taxid).popitem()
         num_rank_of_query = numeric_rank[rank_of_query]
-        ranks = self.ncbi.get_rank(lineage)
+        ranks = self.get_rank(lineage)
         invert_dict = {v: k for k, v in ranks.items()}
         lineage_ranks = invert_dict.keys()
         # Get ranks and taxids
@@ -77,19 +85,19 @@ class BlastTaxonomy(BlastData, BlastDB):
                 if len(taxlist) > 1:
                     lineage = []
                     for tax in taxlist:
-                        normalised_lineage = self.get_normalised_lineage(tax, self.ranks_of_interest, self.taxonomic_ranks)
+                        normalised_lineage = self.get_normalised_lineage(tax, self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
                         rev_normalised_lineage = {v: k for k, v in normalised_lineage.items()}
                         lineage.append(set(rev_normalised_lineage))
                     lineage_intersect = list(set.intersection(*lineage))
-                    root_tree = self.ncbi.get_topology(lineage_intersect)
+                    root_tree = self.get_topology(lineage_intersect)
                     consensus = root_tree.get_leaf_names()
                 else:
                     consensus = taxlist
             else:
                 consensus = hits["tax_id"].tolist()
-            con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks)
+            con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
             consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
-            return pd.DataFrame(consensus_taxonomy)
+        return pd.DataFrame(consensus_taxonomy)
 
 if __name__ == "__main__":
 
@@ -118,9 +126,11 @@ if __name__ == "__main__":
 
     # Split queries into n chunks
     query_chunks = list(split(queries, args.size[0]))
+    print(query_chunks)
 
     # Process one chunk
     queries_to_process = query_chunks[args.index[0] - 1]
+    print(queries_to_process)
     consensus_taxonomy = bt.assign_consensus_taxonomy()
     print(consensus_taxonomy)
     consensus_taxonomy.to_csv("{}_{}.csv".format(out_prefix, args.index[0]), index = False)
