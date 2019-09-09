@@ -80,7 +80,7 @@ def get_normalised_lineage(taxid, ranks_of_interest, taxonomic_ranks):
 
     return(normalised_lineage)
 
-def assign_consensus_taxonomy(blast_df, pp_sway, out_prefix, **kwargs):
+def assign_consensus_taxonomy(blast_df, pp_sway, **kwargs):
     consensus_taxonomy = []
     for query, hits in blast_df.groupby("query"):
         if hits.shape[0] > 1:
@@ -104,7 +104,8 @@ def assign_consensus_taxonomy(blast_df, pp_sway, out_prefix, **kwargs):
             consensus = hits["tax_id"].tolist()
         con_lin = get_normalised_lineage(consensus[0], **kwargs)
         consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
-    pd.DataFrame(consensus_taxonomy).to_csv("{}_{}.csv".format(out_prefix, args.index[0]), index = False)
+    return(consensus_taxonomy)
+
 
 # Import parsed and evalue filtered BLAST+ results
 blast = pd.read_csv(args.filename, index_col = "query", nrows = int(args.nrows) if args.nrows else args.nrows)
@@ -116,4 +117,6 @@ query_chunks = list(split(queries, args.size[0]))
 
 # Process one chunk
 queries_to_process = query_chunks[args.index[0] - 1]
-assign_consensus_taxonomy(blast.loc[queries_to_process], pp_sway, out_prefix, ranks_of_interest = RANKS_OF_INTEREST, taxonomic_ranks = TAXONOMIC_RANKS)
+consensus_taxonomy = assign_consensus_taxonomy(blast.loc[queries_to_process], pp_sway, ranks_of_interest = RANKS_OF_INTEREST, taxonomic_ranks = TAXONOMIC_RANKS)
+print(pd.DataFrame(consensus_taxonomy))
+pd.DataFrame(consensus_taxonomy).to_csv("{}_{}.csv".format(out_prefix, args.index[0]), index = False)
