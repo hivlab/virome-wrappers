@@ -4,6 +4,7 @@ import warnings
 from ete3 import NCBITaxa
 import numpy as np
 import argparse
+import tarfile
 
 def split(x, n):
     k, m = divmod(len(x), n)
@@ -74,7 +75,7 @@ class BlastTaxonomy(BlastDB):
         self.verbose = verbose
     
     def get_consensus_taxonomy(self):
-        verboseprint = print if self.verbose else lambda *a, **k: None
+        verboseprint = print() if self.verbose else lambda *a, **k: None
         consensus_taxonomy = []
         for query, hits in self.by_query:
             verboseprint(query)
@@ -98,40 +99,37 @@ class BlastTaxonomy(BlastDB):
                 consensus = hits["tax_id"].tolist()
             con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
             consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
-        return pd.DataFrame(consensus_taxonomy)
+        consensus_taxonomy = pd.DataFrame(consensus_taxonomy)
+        # Convert tax_ids to integers
+        consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype="Int64"))
+        return consensus_taxonomy
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description = "Process BLAST+ taxonomy in chunks.")
-    parser.add_argument("--infile", dest = "filename", type = argparse.FileType("r"), 
-                    required=True,
+    parser = argparse.ArgumentParser(description = "Process BLAST+ taxonomy.")
+    parser.add_argument("filename", metavar = "file", nargs="+",
                     help = "Path to input file with BLAST results")
-    parser.add_argument("-i", dest = "index", type = int, nargs = 1,
-                        required=True,
-                    help = "Array index, an integer")
-    parser.add_argument("-s", dest = "size", type = int, nargs = 1,
-                    required = True, help = "Array size, an integer")
-    parser.add_argument("--nrows", dest = "nrows", default = None,
-                        help = "Number of rows of file to read. Useful for reading pieces of large files.")
     parser.add_argument("--verbose", dest = "verbose", action = "store_true")
     args = parser.parse_args()
 
     # Output file prefix
     out_prefix = "consensus_taxonomy"
-    
+
     # Import file with BLAST results
-    results = pd.read_csv(args.filename, index_col = "query", nrows = int(args.nrows) if args.nrows else args.nrows)[["gi", "pident", "evalue", "tax_id"]]
-    
-    # Get query indices
-    by_query = results.groupby("query")
-    queries = [*by_query.indices]
+    run = []
+    for file in args.filename:
+        if tarfile.is_tarfile(file):
+            with tarfile.open(file, "r:*") as tar:
+                splits = []
+                for member in tar.getmembers():
+                    m = tar.extractfile(member)
+                    splits.append(pd.read_csv(m))
+                run.append(pd.concat(splits))
 
-    # Split queries into n chunks
-    query_chunks = list(split(queries, args.size[0]))
+    run_df = pd.concat(run)
+    results = run_df[["path", "query", "gi", "tax_id", "pident"]]
 
-    # Process one chunk
-    queries_to_process = query_chunks[args.index[0] - 1]
-    bt = BlastTaxonomy(results.loc[queries_to_process], verbose=args.verbose)
+    # Get consensus taxonomy
+    bt = BlastTaxonomy(results, verbose=args.verbose)
     consensus_taxonomy = bt.get_consensus_taxonomy()
-    consensus_taxonomy[["superkingdom", "order", "family", "genus", "species"]] = consensus_taxonomy[["superkingdom", "order", "family", "genus", "species"]].apply(lambda x: pd.Series(x, dtype="Int64"))
-    consensus_taxonomy.to_csv("{}_{}.csv".format(out_prefix, args.index[0]), index = False)
+    consensus_taxonomy.to_csv("{}_{}.csv".format("SRR5558278", out_prefix), index = False)
