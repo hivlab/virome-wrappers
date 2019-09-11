@@ -20,6 +20,6 @@ program = options.pop("program")
 
 options = " ".join(["-{} {}".format(k, v) for k, v in options.items()])
 
-shell("({program})"
-      "{options}"
-      "-num_threads {snakemake.threads} {log}")
+shell("({program} "
+      "{options} "
+      "-num_threads {snakemake.threads}) {log}")
