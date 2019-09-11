@@ -58,7 +58,7 @@ class BlastDB:
 
 class BlastTaxonomy(BlastDB):
     
-    def __init__(self, results, pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None, verbose=False):
+    def __init__(self, results, pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None):
         
         BlastDB.__init__(self, dbfile)
         self.by_query = results.groupby("query") 
@@ -75,10 +75,8 @@ class BlastTaxonomy(BlastDB):
         self.verbose = verbose
     
     def get_consensus_taxonomy(self):
-        verboseprint = print() if self.verbose else lambda *a, **k: None
         consensus_taxonomy = []
         for query, hits in self.by_query:
-            verboseprint(query)
             if hits.shape[0] > 1:
                 pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
                 within = hits["pident"].apply(lambda x: x >= pident_threshold)
@@ -106,18 +104,9 @@ class BlastTaxonomy(BlastDB):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description = "Process BLAST+ taxonomy.")
-    parser.add_argument("filename", metavar = "file", nargs="+",
-                    help = "Path to input file with BLAST results")
-    parser.add_argument("--verbose", dest = "verbose", action = "store_true")
-    args = parser.parse_args()
-
-    # Output file prefix
-    out_prefix = "consensus_taxonomy"
-
     # Import file with BLAST results
     run = []
-    for file in args.filename:
+    for file in snakemake.input:
         if tarfile.is_tarfile(file):
             with tarfile.open(file, "r:*") as tar:
                 splits = []
@@ -130,6 +119,6 @@ if __name__ == "__main__":
     results = run_df[["path", "query", "gi", "tax_id", "pident"]]
 
     # Get consensus taxonomy
-    bt = BlastTaxonomy(results, verbose=args.verbose)
+    bt = BlastTaxonomy(results)
     consensus_taxonomy = bt.get_consensus_taxonomy()
-    consensus_taxonomy.to_csv("{}_{}.csv".format("SRR5558278", out_prefix), index = False)
+    consensus_taxonomy.to_csv(snakemake.output, index = False)
