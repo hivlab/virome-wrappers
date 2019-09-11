@@ -5,6 +5,9 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 
+# Setup log
+log = snakemake.log_fmt_shell(stdout = False, stderr = True)
+
 # Merge function arguments into dictionary.
 # Look for available options for the BLAST+ command-line applications
 # https://www.ncbi.nlm.nih.gov/books/NBK279684/
