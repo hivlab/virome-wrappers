@@ -61,9 +61,9 @@ class BlastTaxonomy(BlastDB):
     def __init__(self, results, query_key = "qseqid", taxid_key = "staxid", pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None):
         
         BlastDB.__init__(self, dbfile)
-        self.query_key = query_key,
-        self.taxid_key = taxid_key,
-        self.by_query = results.groupby(self.query_key) 
+        self.query_key = query_key
+        self.taxid_key = taxid_key
+        self.by_query = results.groupby(self.query_key)
         self.pp_sway = pp_sway
         if ranks_of_interest:
             self.ranks_of_interest = ranks_of_interest
