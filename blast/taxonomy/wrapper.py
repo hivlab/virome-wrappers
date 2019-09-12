@@ -81,7 +81,7 @@ class BlastTaxonomy(BlastDB):
                 pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
                 within = hits["pident"].apply(lambda x: x >= pident_threshold)
                 hits_filtered = hits[within]
-                taxlist = hits_filtered["tax_id"].tolist()
+                taxlist = hits_filtered["staxid"].tolist()
                 if len(taxlist) > 1:
                     lineage = []
                     for tax in taxlist:
@@ -117,8 +117,7 @@ if __name__ == "__main__":
         else:
             run.append(pd.read_csv(file, sep = "\s+"))
 
-    run_df = pd.concat(run)
-    results = run_df[["path", "query", "gi", "tax_id", "pident"]]
+    results = pd.concat(run)
 
     # Get consensus taxonomy
     bt = BlastTaxonomy(results)
