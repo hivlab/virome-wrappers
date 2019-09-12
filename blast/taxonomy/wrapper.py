@@ -58,10 +58,12 @@ class BlastDB:
 
 class BlastTaxonomy(BlastDB):
     
-    def __init__(self, results, pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None):
+    def __init__(self, results, query_key = "qseqid", taxid_key = "staxid", pp_sway=1, ranks_of_interest=None, taxonomic_ranks=None, dbfile=None):
         
         BlastDB.__init__(self, dbfile)
-        self.by_query = results.groupby("qseqid") 
+        self.query_key = query_key,
+        self.taxid_key = taxid_key,
+        self.by_query = results.groupby(self.query_key) 
         self.pp_sway = pp_sway
         if ranks_of_interest:
             self.ranks_of_interest = ranks_of_interest
@@ -76,11 +78,12 @@ class BlastTaxonomy(BlastDB):
     def get_consensus_taxonomy(self):
         consensus_taxonomy = []
         for query, hits in self.by_query:
+            print(query)
             if hits.shape[0] > 1:
                 pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
                 within = hits["pident"].apply(lambda x: x >= pident_threshold)
                 hits_filtered = hits[within]
-                taxlist = hits_filtered["staxid"].tolist()
+                taxlist = hits_filtered[self.taxid_key].tolist()
                 if len(taxlist) > 1:
                     lineage = []
                     for tax in taxlist:
@@ -93,7 +96,7 @@ class BlastTaxonomy(BlastDB):
                 else:
                     consensus = taxlist
             else:
-                consensus = hits["qseqid"].tolist()
+                consensus = hits[self.query_key].tolist()
             con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
             consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
         consensus_taxonomy = pd.DataFrame(consensus_taxonomy)
