@@ -93,7 +93,7 @@ class BlastTaxonomy(BlastDB):
                 else:
                     consensus = taxlist
             else:
-                consensus = hits["tax_id"].tolist()
+                consensus = hits["qseqid"].tolist()
             con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
             consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
         consensus_taxonomy = pd.DataFrame(consensus_taxonomy)
