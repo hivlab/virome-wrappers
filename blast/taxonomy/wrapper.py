@@ -82,7 +82,7 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy = []
         for query, hits in self.by_query:
             if hits.shape[0] > 1:
-                # Trying to remove unidentified taxa
+                # Try to remove unidentified taxa
                 hits["name"] = hits[self.taxid_key].apply(lambda x: self.translate_to_names([x])[0])
                 identified = hits["name"].apply(lambda x: "unidentified" not in x)
                 if sum(identified) >= 1:
