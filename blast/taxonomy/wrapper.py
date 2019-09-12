@@ -117,7 +117,7 @@ if __name__ == "__main__":
                     splits.append(pd.read_csv(m))
                 run.append(pd.concat(splits))
         else:
-            run.append(pd.read_csv(file, sep = "\s+"))
+            run.append(pd.read_csv(file, sep = "\t"))
 
     results = pd.concat(run)
 
