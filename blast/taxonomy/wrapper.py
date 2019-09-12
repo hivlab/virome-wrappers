@@ -103,11 +103,11 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype="Int64"))
         return consensus_taxonomy
 
-if __name__ == "__main__":
-
+def blast_taxonomy(input, output):
+    
     # Import file with BLAST results
     run = []
-    for file in snakemake.input:
+    for file in input:
         if tarfile.is_tarfile(file):
             with tarfile.open(file, "r:*") as tar:
                 splits = []
@@ -123,5 +123,11 @@ if __name__ == "__main__":
     # Get consensus taxonomy
     bt = BlastTaxonomy(results)
     consensus_taxonomy = bt.get_consensus_taxonomy()
-    with open(snakemake.output, "w") as f:
-        consensus_taxonomy.to_csv(f, index = False)
+    with open(output, "w") as outfile:
+        consensus_taxonomy.to_csv(outfile, index = False)
+
+if __name__ == "__main__":
+
+    blast_taxonomy(snakemake.input, snakemake.output[0])
+
+    
