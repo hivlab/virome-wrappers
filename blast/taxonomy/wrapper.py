@@ -78,7 +78,6 @@ class BlastTaxonomy(BlastDB):
     def get_consensus_taxonomy(self):
         consensus_taxonomy = []
         for query, hits in self.by_query:
-            print(query)
             if hits.shape[0] > 1:
                 pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
                 within = hits["pident"].apply(lambda x: x >= pident_threshold)
@@ -124,4 +123,7 @@ if __name__ == "__main__":
     # Get consensus taxonomy
     bt = BlastTaxonomy(results)
     consensus_taxonomy = bt.get_consensus_taxonomy()
-    consensus_taxonomy.to_csv(snakemake.output, index = False)
+    print(snakemake.output)
+    print(snakemake.output[0])
+    with snakemake.output as handle:
+        consensus_taxonomy.to_csv(handle, index = False)
