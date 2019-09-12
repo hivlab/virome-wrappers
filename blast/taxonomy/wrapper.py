@@ -72,7 +72,6 @@ class BlastTaxonomy(BlastDB):
         else:
             self.taxonomic_ranks = [ "no rank", "species", "genus", "family", "order", "class", "phylum", "kingdom", "superkingdom"]
         self.unidentified = 32644
-        self.verbose = verbose
     
     def get_consensus_taxonomy(self):
         consensus_taxonomy = []
