@@ -123,7 +123,5 @@ if __name__ == "__main__":
     # Get consensus taxonomy
     bt = BlastTaxonomy(results)
     consensus_taxonomy = bt.get_consensus_taxonomy()
-    print(snakemake.output)
-    print(snakemake.output[0])
-    with snakemake.output as handle:
-        consensus_taxonomy.to_csv(handle, index = False)
+    with open(snakemake.output, "w") as f:
+        consensus_taxonomy.to_csv(f, index = False)
