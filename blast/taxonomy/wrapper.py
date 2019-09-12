@@ -83,7 +83,7 @@ class BlastTaxonomy(BlastDB):
         for query, hits in self.by_query:
             if hits.shape[0] > 1:
                 # Trying to remove unidentified taxa
-                hits["name"] = hits[self.taxid_key].apply(lambda x: ncbi.translate_to_names([x])[0])
+                hits["name"] = hits[self.taxid_key].apply(lambda x: self.translate_to_names([x])[0])
                 identified = hits["name"].apply(lambda x: "unidentified" not in x)
                 if sum(identified) >= 1:
                     hits = hits[identified]
