@@ -30,6 +30,9 @@ class BlastDB:
     
     def get_topology(self, lineage):
         return self.ncbi.get_topology(lineage)
+        
+    def translate_to_names(self, taxids):
+        return self.ncbi.translate_to_names(taxids)
 
     def get_normalised_lineage(self, taxid, ranks_of_interest, taxonomic_ranks, unidentified):
         # Dictionary that maps taxonomic ranks to integers,
@@ -79,9 +82,16 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy = []
         for query, hits in self.by_query:
             if hits.shape[0] > 1:
+                # Trying to remove unidentified taxa
+                hits["name"] = hits[self.taxid_key].apply(lambda x: ncbi.translate_to_names([x])[0])
+                identified = hits["name"].apply(lambda x: "unidentified" not in x)
+                if sum(identified) >= 1:
+                    hits = hits[identified]
+                # Filtering by percent identity
                 pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
                 within = hits["pident"].apply(lambda x: x >= pident_threshold)
                 hits_filtered = hits[within]
+                # Getting consensus taxonomy
                 taxlist = hits_filtered[self.taxid_key].tolist()
                 if len(taxlist) > 1:
                     lineage = []
