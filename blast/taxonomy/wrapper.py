@@ -100,6 +100,11 @@ class BlastTaxonomy(BlastDB):
                         rev_normalised_lineage = {v: k for k, v in normalised_lineage.items()}
                         lineage.append(set(rev_normalised_lineage))
                     lineage_intersect = list(set.intersection(*lineage))
+                    if len(lineage_intersect) is 0:
+                        consensus = [self.unidentified]
+                    else:
+                        root_tree = self.get_topology(lineage_intersect)
+                        consensus = root_tree.get_leaf_names()
                     root_tree = self.get_topology(lineage_intersect)
                     consensus = root_tree.get_leaf_names()
                 else:
