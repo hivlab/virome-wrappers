@@ -107,6 +107,7 @@ class BlastTaxonomy(BlastDB):
                         consensus = root_tree.get_leaf_names()
                     root_tree = self.get_topology(lineage_intersect)
                     consensus = root_tree.get_leaf_names()
+                    consensus = [int(i) for i in consensus]
                 else:
                     consensus = taxlist
             else:
