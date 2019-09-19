@@ -148,6 +148,6 @@ def blast_taxonomy(input, output):
 
 if __name__ == "__main__":
 
-    blast_taxonomy(["SRR5557999_blastn-nt_8_mapped.tsv","SRR5557999_megablast-nt_8_mapped.tsv"], "OUTFILE.csv")
+    blast_taxonomy(snakemake.input, snakemake.output[0])
 
     
