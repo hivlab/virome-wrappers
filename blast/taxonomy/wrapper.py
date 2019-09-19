@@ -1,10 +1,12 @@
 import pandas as pd
+pd.options.mode.chained_assignment = None
 from pkg_resources import parse_version
 import warnings
 from ete3 import NCBITaxa
 import numpy as np
 import argparse
 import tarfile
+import re
 
 def split(x, n):
     k, m = divmod(len(x), n)
@@ -84,39 +86,41 @@ class BlastTaxonomy(BlastDB):
             if hits.shape[0] > 1:
                 # Try to remove unidentified taxa
                 hits["name"] = hits[self.taxid_key].apply(lambda x: self.translate_to_names([x])[0])
-                identified = hits["name"].apply(lambda x: "unidentified" not in x)
+                identified = hits["name"].apply(lambda x: bool(re.search("unident", x)))
                 if sum(identified) >= 1:
                     hits = hits[identified]
-                # Filtering by percent identity
-                pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
-                within = hits["pident"].apply(lambda x: x >= pident_threshold)
-                hits_filtered = hits[within]
-                # Getting consensus taxonomy
-                taxlist = hits_filtered[self.taxid_key].tolist()
-                if len(taxlist) > 1:
-                    lineage = []
-                    for tax in taxlist:
-                        normalised_lineage = self.get_normalised_lineage(tax, self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
-                        rev_normalised_lineage = {v: k for k, v in normalised_lineage.items()}
-                        lineage.append(set(rev_normalised_lineage))
-                    lineage_intersect = list(set.intersection(*lineage))
-                    if len(lineage_intersect) is 0:
-                        consensus = [self.unidentified]
-                    else:
+                    # Filtering by percent identity
+                    pident_threshold = hits["pident"].aggregate("max") - self.pp_sway
+                    within = hits["pident"].apply(lambda x: x >= pident_threshold)
+                    hits_filtered = hits[within]
+                    # Getting consensus taxonomy
+                    taxlist = hits_filtered[self.taxid_key].tolist()
+                    if len(taxlist) > 1:
+                        lineage = []
+                        for tax in taxlist:
+                            normalised_lineage = self.get_normalised_lineage(tax, self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
+                            rev_normalised_lineage = {v: k for k, v in normalised_lineage.items()}
+                            lineage.append(set(rev_normalised_lineage))
+                        lineage_intersect = list(set.intersection(*lineage))
+                        if len(lineage_intersect) == 0:
+                            consensus = [self.unidentified]
+                        else:
+                            root_tree = self.get_topology(lineage_intersect)
+                            consensus = root_tree.get_leaf_names()
+                            consensus = [int(txid) for txid in consensus]
                         root_tree = self.get_topology(lineage_intersect)
                         consensus = root_tree.get_leaf_names()
-                        consensus = [int(txid) for txid in consensus]
-                    root_tree = self.get_topology(lineage_intersect)
-                    consensus = root_tree.get_leaf_names()
+                    else:
+                        consensus = taxlist
                 else:
-                    consensus = taxlist
+                    consensus = [self.unidentified]
             else:
                 consensus = hits[self.taxid_key].tolist()
             con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
             consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
         consensus_taxonomy = pd.DataFrame(consensus_taxonomy)
         # Convert tax_ids to integers
-        consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype="Int64"))
+        consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype = "Int64"))
         return consensus_taxonomy
 
 def blast_taxonomy(input, output):
@@ -144,6 +148,6 @@ def blast_taxonomy(input, output):
 
 if __name__ == "__main__":
 
-    blast_taxonomy(snakemake.input, snakemake.output[0])
+    blast_taxonomy(["SRR5557999_blastn-nt_8_mapped.tsv","SRR5557999_megablast-nt_8_mapped.tsv"], "OUTFILE.csv")
 
     
