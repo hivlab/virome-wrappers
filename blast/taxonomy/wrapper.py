@@ -42,8 +42,12 @@ class BlastDB:
         numeric_rank = {taxonomic_ranks[i]: i for i in range(len(taxonomic_ranks))}
         # Get lineage for taxid and map it to numeric rank
         lineage = self.get_lineage(taxid)
+        lineage_ranks = self.get_rank(lineage)
+        # Keep only main taxonomic ranks 
+        lineage_ranks = {k: v for k, v in lineage_ranks.items() if v in taxonomic_ranks}
+        lineage = list(lineage_ranks.keys())
         updated_taxid=[lineage[-1]]
-        _, rank_of_query = self.get_rank(updated_taxid).popitem()
+        _, rank_of_query = self.get_rank(updated_taxid).popitem() 
         num_rank_of_query = numeric_rank[rank_of_query]
         ranks = self.get_rank(lineage)
         invert_dict = {v: k for k, v in ranks.items()}
@@ -82,7 +86,7 @@ class BlastTaxonomy(BlastDB):
     
     def get_consensus_taxonomy(self):
         consensus_taxonomy = []
-        for query, hits in self.by_query:
+        for query, hits in self.by_query:           
             if hits.shape[0] > 1:
                 # Try to remove unidentified taxa
                 hits["name"] = hits[self.taxid_key].apply(lambda x: self.translate_to_names([x])[0])
@@ -115,7 +119,7 @@ class BlastTaxonomy(BlastDB):
                 else:
                     consensus = [self.unidentified]
             else:
-                consensus = hits[self.taxid_key].tolist()
+                consensus = hits[self.taxid_key].tolist()         
             con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
             consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
         consensus_taxonomy = pd.DataFrame(consensus_taxonomy)
