@@ -2,7 +2,9 @@
 from snakemake.shell import shell
 import os
 
-outdir = os.path.dirname(snakemake.output.masked[0])
+print("This is input:", snakemake.input.fa)
+print("This is output masked:", snakemake.output.masked)
+outdir = os.path.dirname(snakemake.output.masked)
 print("This is outdir:", outdir)
 extra = snakemake.params.get("extra", "")
 
