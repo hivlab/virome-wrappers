@@ -1,8 +1,9 @@
 
 from snakemake.shell import shell
-import os.path
+import os
 
 outdir = os.path.dirname(snakemake.output.masked[0])
+print("This is outdir:", outdir)
 extra = snakemake.params.get("extra", "")
 
 compressed_cat = snakemake.output.cat + ".gz"
