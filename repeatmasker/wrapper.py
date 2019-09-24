@@ -12,7 +12,7 @@ shell(
     RepeatMasker {extra} -pa {snakemake.threads} {snakemake.input.fa} -dir {outdir}
     if head -n 1 {snakemake.output.out} | grep -q 'There were no repetitive sequences detected'
     then
-      ln -sr {smakemake.input.fa} {snakemake.output.masked} && touch {snakemake.output.tbl}
+      ln -sr {snakemake.input.fa} {snakemake.output.masked} && touch {snakemake.output.tbl}
     fi
     if [[ -f {compressed_cat} ]]
     then
