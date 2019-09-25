@@ -127,7 +127,7 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype = "Int64"))
         return consensus_taxonomy
 
-def blast_taxonomy(input, output):
+def blast_taxonomy(input, output, **kwargs):
     
     # Import file with BLAST results
     run = []
@@ -145,7 +145,7 @@ def blast_taxonomy(input, output):
     results = pd.concat(run)
 
     # Get consensus taxonomy
-    bt = BlastTaxonomy(results)
+    bt = BlastTaxonomy(results, **kwargs)
     consensus_taxonomy = bt.get_consensus_taxonomy()
     with open(output, "w") as outfile:
         consensus_taxonomy.to_csv(outfile, index = False)
