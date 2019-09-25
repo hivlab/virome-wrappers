@@ -142,7 +142,7 @@ def blast_taxonomy(input, output, **kwargs):
         else:
             run.append(pd.read_csv(file, sep = "\t"))
 
-    results = pd.concat(run)
+    results = pd.concat(run, sort = False)
 
     # Get consensus taxonomy
     bt = BlastTaxonomy(results, **kwargs)
