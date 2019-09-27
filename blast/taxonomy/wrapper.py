@@ -152,6 +152,6 @@ def blast_taxonomy(input, output, **kwargs):
 
 if __name__ == "__main__":
 
-    blast_taxonomy(snakemake.input, snakemake.output[0])
+    blast_taxonomy(snakemake.input, snakemake.output[0], snakemake.params)
 
     
