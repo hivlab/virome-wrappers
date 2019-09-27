@@ -90,7 +90,8 @@ class BlastTaxonomy(BlastDB):
             if hits.shape[0] > 1:
                 # Try to remove unidentified taxa
                 hits["name"] = hits[self.taxid_key].apply(lambda x: self.translate_to_names([x])[0])
-                identified = hits["name"].apply(lambda x: bool(re.search("unident", x)))
+                unidentified = hits["name"].apply(lambda x: bool(re.search("unident", x)))
+                identified = np.invert(unidentified)
                 if sum(identified) >= 1:
                     hits = hits[identified]
                     # Filtering by percent identity
