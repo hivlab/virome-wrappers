@@ -88,6 +88,9 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy = []
         for query, hits in self.by_query:           
             if hits.shape[0] > 1:
+                # Keep only one top hit from each taxon
+                hits["pident_rank"] = hits.groupby([self.taxid_key])["pident"].rank(method = "first", ascending = False)
+                hits = hits[hits["pident_rank"] == 1]
                 # Try to remove unidentified taxa
                 hits["name"] = hits[self.taxid_key].apply(lambda x: self.translate_to_names([x])[0])
                 unidentified = hits["name"].apply(lambda x: bool(re.search("unident", x)))
