@@ -130,6 +130,9 @@ class BlastTaxonomy(BlastDB):
 
 def blast_taxonomy(input, output, **kwargs):
     
+    # Convert to list if string
+    input = [input] if isinstance(input, str) else input
+
     # Import file with BLAST results
     run = []
     for file in input:
