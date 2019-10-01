@@ -77,11 +77,11 @@ class BlastTaxonomy(BlastDB):
         if ranks_of_interest:
             self.ranks_of_interest = ranks_of_interest
         else:
-            self.ranks_of_interest = ['superkingdom', 'order', 'family', 'genus', 'species']
+            self.ranks_of_interest = ["superkingdom", "order", "family", "genus", "species"]
         if taxonomic_ranks:
             self.taxonomic_ranks = taxonomic_ranks
         else:
-            self.taxonomic_ranks = [ "no rank", "species", "genus", "family", "order", "class", "phylum", "kingdom", "superkingdom"]
+            self.taxonomic_ranks = ["no rank", "species", "genus", "family", "order", "class", "phylum", "kingdom", "superkingdom"]
         self.unidentified = 32644
     
     def get_consensus_taxonomy(self):
