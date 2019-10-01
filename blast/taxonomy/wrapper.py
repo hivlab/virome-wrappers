@@ -131,10 +131,7 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype = "Int64"))
         return consensus_taxonomy
 
-def blast_taxonomy(input, output, **kwargs):
-    
-    # Convert to list if string
-    input = [input] if isinstance(input, str) else input
+def blast_taxonomy(*input, outfile, **kwargs):
 
     # Import file with BLAST results
     run = []
@@ -159,6 +156,6 @@ def blast_taxonomy(input, output, **kwargs):
 
 if __name__ == "__main__":
 
-    blast_taxonomy(snakemake.input, snakemake.output[0], snakemake.params)
+    blast_taxonomy(snakemake.input, outfile = snakemake.output[0], snakemake.params)
 
     
