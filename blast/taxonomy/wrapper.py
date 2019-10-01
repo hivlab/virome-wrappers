@@ -86,7 +86,7 @@ class BlastTaxonomy(BlastDB):
     
     def get_consensus_taxonomy(self):
         consensus_taxonomy = []
-        for query, hits in self.by_query:           
+        for query, hits in self.by_query:
             if hits.shape[0] > 1:
                 # Keep only one top hit from each taxon
                 hits["pident_rank"] = hits.groupby([self.taxid_key])["pident"].rank(method = "first", ascending = False)
@@ -116,14 +116,12 @@ class BlastTaxonomy(BlastDB):
                             root_tree = self.get_topology(lineage_intersect)
                             consensus = root_tree.get_leaf_names()
                             consensus = [int(txid) for txid in consensus]
-                        root_tree = self.get_topology(lineage_intersect)
-                        consensus = root_tree.get_leaf_names()
                     else:
                         consensus = taxlist
                 else:
                     consensus = [self.unidentified]
             else:
-                consensus = hits[self.taxid_key].tolist()         
+                consensus = hits[self.taxid_key].tolist()   
             con_lin = self.get_normalised_lineage(consensus[0], self.ranks_of_interest, self.taxonomic_ranks, self.unidentified)
             consensus_taxonomy.append(dict({"query": query, "consensus": consensus[0], "pident": hits["pident"].aggregate("max"), "hits": hits.shape[0]}, **con_lin))
         consensus_taxonomy = pd.DataFrame(consensus_taxonomy)
@@ -131,7 +129,7 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype = "Int64"))
         return consensus_taxonomy
 
-def blast_taxonomy(*input, outfile, **kwargs):
+def blast_taxonomy(input, output, **kwargs):
 
     # Import file with BLAST results
     run = []
@@ -156,6 +154,6 @@ def blast_taxonomy(*input, outfile, **kwargs):
 
 if __name__ == "__main__":
 
-    blast_taxonomy(snakemake.input, outfile = snakemake.output[0], snakemake.params)
+    blast_taxonomy(snakemake.input, snakemake.output[0], **snakemake.params)
 
     
