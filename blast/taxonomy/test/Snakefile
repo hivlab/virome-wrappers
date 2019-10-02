@@ -1,0 +1,8 @@
+
+rule classify:
+    input: 
+        "blast-results/testSeq005_megablast-nt_1_mapped.tsv", "blast-results/testSeq005_blastn-nt_1_mapped.tsv"
+    output: 
+        "output/testSeq005_classified_1.csv"
+    wrapper: 
+        "file:../wrapper.py"
