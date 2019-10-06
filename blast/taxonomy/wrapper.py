@@ -92,7 +92,7 @@ class BlastTaxonomy(BlastDB):
         consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[self.ranks_of_interest].apply(lambda x: pd.Series(x, dtype = "Int64"))
         return consensus_taxonomy
 
-def blast_taxonomy(input, output, **kwargs):
+def blast_taxonomy(input, output, sep = "\t", **kwargs):
 
     # Import file with BLAST results
     run = []
@@ -102,10 +102,10 @@ def blast_taxonomy(input, output, **kwargs):
                 splits = []
                 for member in tar.getmembers():
                     m = tar.extractfile(member)
-                    splits.append(pd.read_csv(m))
+                    splits.append(pd.read_csv(m, sep = sep))
                 run.append(pd.concat(splits))
         else:
-            run.append(pd.read_csv(file, sep = "\t"))
+            run.append(pd.read_csv(file, sep = sep))
 
     results = pd.concat(run, sort = False)
 
