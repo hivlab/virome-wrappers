@@ -5,3 +5,4 @@ channels:
 dependencies:
   - bbmap=38.22
   - pigz=2.3.4
+  - samtools==1.9
