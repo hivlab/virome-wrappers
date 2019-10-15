@@ -3,6 +3,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - bbmap=38.22
-  - pigz=2.3.4
-  - samtools=1.9 
+  - bbmap =38.22
+  - pigz =2.3.4
+  - samtools ==1.9
