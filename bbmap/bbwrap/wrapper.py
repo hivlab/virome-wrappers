@@ -21,6 +21,10 @@ inputs = inputs.replace("input", "in")
 # Get outputs.
 outputs = arg_c(snakemake.output)
 
+# Pass only bbmap/bbwrap output parameters
+bbmap_outputs = ["out", "outu", "outm", "scafstats", "refstats", "bhist", "qhist", "aqhist", "bqhist", "lhist", "ihist", "ehist", "qahist", "indelhist", "mhist", "gchist", "idhist", "covstats", "rpkm", "covhist", "basecov", "bincov"]
+outputs = {k:v for k, v in outputs.items() if k in bbmap_outputs}
+
 # Get extra arguments.
 extra = snakemake.params.get("extra", "")
 
