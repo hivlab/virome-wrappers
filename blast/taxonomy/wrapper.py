@@ -8,9 +8,12 @@ import argparse
 import tarfile
 import re
 
-def split(x, n):
-    k, m = divmod(len(x), n)
-    return (x[i * k + min(i, m): (i + 1) * k + min(i + 1, m)] for i in range(n))
+# Helper function to import tables
+def safely_read_csv(path, **kwargs):
+  try:
+    return pd.read_csv(path, **kwargs)
+  except pd.errors.EmptyDataError:
+    pass
 
 class pandasVersionWarning(UserWarning):
     pass
@@ -102,16 +105,18 @@ def blast_taxonomy(input, output, sep = "\t", **kwargs):
                 splits = []
                 for member in tar.getmembers():
                     m = tar.extractfile(member)
-                    splits.append(pd.read_csv(m, sep = sep))
+                    splits.append(safely_read_csv(m, sep = sep))
                 run.append(pd.concat(splits))
         else:
-            run.append(pd.read_csv(file, sep = sep))
+            run.append(safely_read_csv(file, sep = sep))
 
+    if all(v is None for v in run):
+        consensus_taxonomy = pd.DataFrame()
+    else:
     results = pd.concat(run, sort = False)
-
-    # Get consensus taxonomy
     bt = BlastTaxonomy(results, **kwargs)
     consensus_taxonomy = bt.get_consensus_taxonomy()
+    
     with open(output, "w") as outfile:
         consensus_taxonomy.to_csv(outfile, index = False)
 
