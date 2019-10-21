@@ -113,9 +113,9 @@ def blast_taxonomy(input, output, sep = "\t", **kwargs):
     if all(v is None for v in run):
         consensus_taxonomy = pd.DataFrame()
     else:
-    results = pd.concat(run, sort = False)
-    bt = BlastTaxonomy(results, **kwargs)
-    consensus_taxonomy = bt.get_consensus_taxonomy()
+        results = pd.concat(run, sort = False)
+        bt = BlastTaxonomy(results, **kwargs)
+        consensus_taxonomy = bt.get_consensus_taxonomy()
     
     with open(output, "w") as outfile:
         consensus_taxonomy.to_csv(outfile, index = False)
