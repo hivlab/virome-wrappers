@@ -11,17 +11,17 @@ inputs = dict(snakemake.input)
 input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
 assert isinstance(inputs, type({})), "Input is not a dictionary. " + input_error_msg
 input_names = list(inputs.keys())
-assert any([input_names == ["pe1", "pe2"], input_names == "pe12", input_names == "se"]), input_error_msg
+assert any([input_names == ["pe1", "pe2"], input_names == ["pe12"], input_names == ["se"]]), input_error_msg
 
 # Extract arguments.
-options = snakemake.params.get("options", "")
+extra = snakemake.params.get("extra", "")
 
 # Compose input flags.
 if input_names == ["pe1", "pe2"]:
     input_flags = "-1 {pe1} -2 {pe2}"
-elif input_names == "pe12":
+elif input_names == ["pe12"]:
     input_flags = "--12 {pe12}"
-elif input_names == "se":
+elif input_names == ["se"]:
     input_flags = "-r {se}"
 else:
     raise RuntimeError(
@@ -43,4 +43,7 @@ outdir = dirname(snakemake.output[0])
 log = snakemake.log_fmt_shell(stdout = False, stderr = True)
 
 # Run command.
-shell("(megahit {options} -f -t {snakemake.threads} {input_flags} -o {outdir}) {log}")
+shell("(megahit {extra} -f"
+      " -t {snakemake.threads}"
+      " {input_flags}"
+      " -o {outdir}) {log}")
