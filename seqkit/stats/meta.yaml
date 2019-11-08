@@ -1,0 +1,5 @@
+name: seqkit stats
+description:
+  Statistics of FASTA/Q files.
+authors:
+  - Taavi Päll
