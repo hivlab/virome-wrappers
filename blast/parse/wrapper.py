@@ -23,8 +23,9 @@ def read_data(file):
     return df
 
 def parse_blast_result(blast_result, query, e_cutoff, outfmt, mapped, unmapped):
-    """Finds out whether the BLAST best hit has a evalue lower than the cutoff. 
-    If yes, outputs query information. If no, the sequence will be kept for further analysis. 
+    """Filters BLAST hits by evalue threshold. 
+    Hits with evalue less or equal than threshold will be saved to tsv file using columns specified by 
+    outfmt. Query sequences with hits not passing cutoff will be saved to fasta file. 
     Source: http://biopython.org/DIST/docs/tutorial/Tutorial.html#htoc93.
     Function expexts BLAST tabular format (outfmt 6).
     """
