@@ -1,23 +1,23 @@
 __author__ = "Taavi Päll"
-__copyright__ = "Copyright 2018, Taavi Päll"
+__copyright__ = "Copyright 2019, Taavi Päll"
 __email__ = "tapa741@gmail.com"
 __license__ = "MIT"
 
-from Bio.Blast.Applications import NcbiblastnCommandline
-from Bio.Blast.Applications import NcbiblastxCommandline
+from snakemake.shell import shell
 
-def run_blast(input, output, params):
-  # Merge function arguments into dictionary.
-  options = dict(input)
-  options.update(output)
-  options.update(params)
-  # Compose blastn or blastx command.
-  if "task" in options:
-    cline = NcbiblastnCommandline(**options)
-  else:
-    cline = NcbiblastxCommandline(**options)
-  # Run blast command.
-  stdout, stderr = cline()
+# Setup log
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
-if __name__ == '__main__':
-    run_blast(snakemake.input, snakemake.output, snakemake.params)
+# Merge function arguments into dictionary.
+# Look for available options for the BLAST+ command-line applications
+# https://www.ncbi.nlm.nih.gov/books/NBK279684/
+options = dict(snakemake.input)
+options.update(snakemake.output)
+options.update(snakemake.params)
+
+# Remove BLAST+ program from dictionary before options formatting
+program = options.pop("program")
+
+options = " ".join(["-{} {}".format(k, v) for k, v in options.items()])
+
+shell("({program} {options} -num_threads {snakemake.threads}) {log}")

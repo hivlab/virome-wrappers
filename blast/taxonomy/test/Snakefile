@@ -1,0 +1,28 @@
+
+RUNS = ["testSeq005"]
+
+rule all:
+    input: expand("output/{run}_classified_1.csv", run = RUNS), "output/SRR5558274_classified_old.csv"
+
+rule classify:
+    input: 
+        "blast-results/{run}_megablast-nt_1_mapped.tsv", "blast-results/{run}_blastn-nt_1_mapped.tsv"
+    output: 
+        "output/{run}_classified_1.csv"
+    params:
+        pp_sway = 1
+    wrapper: 
+        "file:../wrapper.py"
+
+rule classify_old:
+    input: 
+        "blast-results/SRR5558274_phages.csv.tar.gz", "blast-results/SRR5558274_phages_viruses.csv.tar.gz"
+    output: 
+        "output/SRR5558274_classified_old.csv"
+    params:
+        pp_sway = 1,
+        sep = ",",
+        query_key = "query", 
+        taxid_key = "tax_id"
+    wrapper: 
+        "file:../wrapper.py"

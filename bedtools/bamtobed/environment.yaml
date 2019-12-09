@@ -3,6 +3,4 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - "python>=3.5"
-  - biopython
-  - "blast>=2.8.0"
+  - bedtools ==2.29.0

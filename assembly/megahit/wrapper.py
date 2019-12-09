@@ -8,10 +8,14 @@ from os.path import dirname
 
 # Check inputs/arguments.
 inputs = dict(snakemake.input)
-input_error_msg = "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
+input_error_msg = (
+    "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
+)
 assert isinstance(inputs, type({})), "Input is not a dictionary. " + input_error_msg
 input_names = list(inputs.keys())
-assert any([input_names == ["pe1", "pe2"], input_names == ["pe12"], input_names == ["se"]]), input_error_msg
+assert any(
+    [input_names == ["pe1", "pe2"], input_names == "pe12", input_names == "se"]
+), input_error_msg
 
 # Extract arguments.
 extra = snakemake.params.get("extra", "")
@@ -28,10 +32,13 @@ else:
         "Reads parameter must contain either:\n"
         "a) two comma-separated lists named 'pe1' and 'pe2' of fasta/q paired-end files\n"
         "b) one comma-separated list named 'pe12' of interleaved fasta/q paired-end files\n"
-        "c) one omma-separated list named 'se' of fasta/q single-end files.")
+        "c) one omma-separated list named 'se' of fasta/q single-end files."
+    )
 
 # Merge input paths with flags.
-inputs.update((k, ",".join(v if isinstance(v, type([])) else [v])) for k,v in inputs.items())
+inputs.update(
+    (k, ",".join(v if isinstance(v, type([])) else [v])) for k, v in inputs.items()
+)
 input_flags = input_flags.format(**inputs)
 
 # Get output dir name from output path where spades writes its output files.
@@ -40,7 +47,7 @@ input_flags = input_flags.format(**inputs)
 outdir = dirname(snakemake.output[0])
 
 # Setup log.
-log = snakemake.log_fmt_shell(stdout = False, stderr = True)
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 # Run command.
 shell("(megahit {extra} -f"

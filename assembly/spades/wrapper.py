@@ -20,7 +20,9 @@ output_dir = dirname(snakemake.output[0])
 print("Output dir is ", output_dir)
 
 # Setup log
-log = snakemake.log_fmt_shell(stdout = False, stderr = True)
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell("mkdir -p {output_dir}")
-shell("(spades.py {options} -1 {snakemake.input[0]} -2 {snakemake.input[1]} -o {output_dir}) {log}")
+shell(
+    "(spades.py {options} -1 {snakemake.input[0]} -2 {snakemake.input[1]} -o {output_dir}) {log}"
+)

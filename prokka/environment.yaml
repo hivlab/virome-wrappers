@@ -1,7 +1,9 @@
 channels:
-  - anaconda
   - conda-forge
+  - bioconda
   - defaults
 dependencies:
-  - python=3.6
-  - requests
+  - prokka
+  - barrnap
+  - aragorn
+  

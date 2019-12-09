@@ -1,3 +1,7 @@
+__author__ = "Taavi Päll"
+__copyright__ = "Copyright 2019, Taavi Päll"
+__email__ = "tapa741@gmail.com"
+__license__ = "MIT"
 
 from snakemake.shell import shell
 
@@ -11,19 +15,21 @@ print("Sampling {} of reads using seed {}.".format(frac, seed))
 
 # Preprocessing command to run.
 commands = [
-            "bbmerge.sh in1={snakemake.input[0]} in2={snakemake.input[1]} outa={snakemake.output.adapters}",
-            "bbmerge.sh in1={snakemake.input[0]} in2={snakemake.input[1]} out={snakemake.output.merged} outu={snakemake.output.unmerged} adapters={snakemake.output.adapters}",
-            "cat {snakemake.output.merged} {snakemake.output.unmerged} > {snakemake.output.reads}",
-            "bbduk.sh in={snakemake.output.reads} out={snakemake.output.trimmed} ref={snakemake.output.adapters} {bbduk}"
-            ]
+    "bbmerge.sh in1={snakemake.input[0]} in2={snakemake.input[1]} outa={snakemake.output.adapters}",
+    "bbmerge.sh in1={snakemake.input[0]} in2={snakemake.input[1]} out={snakemake.output.merged} outu={snakemake.output.unmerged} adapters={snakemake.output.adapters}",
+    "cat {snakemake.output.merged} {snakemake.output.unmerged} > {snakemake.output.reads}",
+    "bbduk.sh in={snakemake.output.reads} out={snakemake.output.trimmed} ref={snakemake.output.adapters} {bbduk}",
+]
 
 # Run preprocessing commands.
 for cmd in commands:
-  shell(cmd)
+    shell(cmd)
 
 # If sample fraction is given, subsample reads using seed.
 # Otherwise symlink trimmed reads to final output.
 if frac and frac < 1:
-  shell("reformat.sh in={snakemake.output.trimmed} out={snakemake.output.sampled} samplerate={frac} sampleseed={seed}")
+    shell(
+        "reformat.sh in={snakemake.output.trimmed} out={snakemake.output.sampled} samplerate={frac} sampleseed={seed}"
+    )
 else:
-  shell("cp {snakemake.output.trimmed} {snakemake.output.sampled}")
+    shell("cp {snakemake.output.trimmed} {snakemake.output.sampled}")
