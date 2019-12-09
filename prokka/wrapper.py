@@ -10,10 +10,7 @@ import os
 extra = snakemake.params.get("extra", "")
 
 # Setup log
-log = snakemake.log_fmt_shell(stdout = False, stderr = True)
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 # Run commands
-shell("(prokka"
-      " {extra}"
-      " --cpus {snakemake.threads}"
-      " {snakemake.input}) {log}")
+shell("(prokka {extra} --cpus {snakemake.threads} {snakemake.input}) {log}")

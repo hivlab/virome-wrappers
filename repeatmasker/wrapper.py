@@ -21,4 +21,4 @@ shell(
       gzip -d {compressed_cat}
     fi
     """
-    )
+)

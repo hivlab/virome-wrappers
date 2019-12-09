@@ -8,12 +8,14 @@ import pandas as pd
 from Bio import SeqIO
 from pandas.io.common import EmptyDataError
 
+
 def touch(fname, times=None):
     """Emulates unix touch command.
     Source: https://stackoverflow.com/questions/1158076/implement-touch-using-python#1160227
     """
-    with open(fname, 'a'):
+    with open(fname, "a"):
         os.utime(fname, times)
+
 
 def read_data(file):
     try:
@@ -21,6 +23,7 @@ def read_data(file):
     except EmptyDataError:
         df = pd.DataFrame()
     return df
+
 
 def parse_blast_result(blast_result, query, e_cutoff, outfmt, mapped, unmapped):
     """Finds out whether the BLAST best hit has a evalue lower than the cutoff. 
@@ -46,7 +49,7 @@ def parse_blast_result(blast_result, query, e_cutoff, outfmt, mapped, unmapped):
         # Filter results
         known = tab[(tab.evalue <= e_cutoff)]
         # Write seqs below threshold to file
-        known.to_csv(mapped, sep = '\t', encoding = "utf-8", index = False)
+        known.to_csv(mapped, sep="\t", encoding="utf-8", index=False)
         known_ids = set(known.qseqid)
     # Subset blast input
     with open(unmapped, "w") as out:
@@ -54,7 +57,8 @@ def parse_blast_result(blast_result, query, e_cutoff, outfmt, mapped, unmapped):
             if record.id not in known_ids:
                 SeqIO.write(record, out, "fasta")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Merge function arguments into dictionary.
     options = dict(snakemake.input)
     options.update(snakemake.output)

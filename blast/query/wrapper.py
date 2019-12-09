@@ -6,7 +6,7 @@ __license__ = "MIT"
 from snakemake.shell import shell
 
 # Setup log
-log = snakemake.log_fmt_shell(stdout = False, stderr = True)
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 # Merge function arguments into dictionary.
 # Look for available options for the BLAST+ command-line applications
@@ -20,6 +20,4 @@ program = options.pop("program")
 
 options = " ".join(["-{} {}".format(k, v) for k, v in options.items()])
 
-shell("({program}"
-      " {options}"
-      " -num_threads {snakemake.threads}) {log}")
+shell("({program} {options} -num_threads {snakemake.threads}) {log}")

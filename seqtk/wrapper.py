@@ -12,7 +12,7 @@ frac = snakemake.params.get("frac", "1")
 print("Sampling fraction of reads:", frac)
 
 # Commands to run
-if (frac > 0 and frac < 1):
+if frac > 0 and frac < 1:
     cmd = f"seqtk sample -s{seed} {{0}} {frac} > {{1}}"
     shell(cmd.format(snakemake.input[0], snakemake.output[0]))
     shell(cmd.format(snakemake.input[1], snakemake.output[1]))

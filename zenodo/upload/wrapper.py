@@ -18,8 +18,11 @@ def md5(fname):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
+
 if not os.environ["ZENODO_PAT"]:
-      raise ValueError("Missing ZENODO_PAT environment variable with zenodo API access token!")
+    raise ValueError(
+        "Missing ZENODO_PAT environment variable with zenodo API access token!"
+    )
 
 # Setup access token.
 access_token = {"access_token": os.environ["ZENODO_PAT"]}
@@ -36,18 +39,19 @@ url = os.path.join(base_url, "deposit/depositions/{}/files".format(deposition_id
 
 # Create a session with a hook to raise error on bad request.
 session = requests.Session()
-session.hooks = {
-   'response': lambda r, *args, **kwargs: r.raise_for_status()
-}
+session.hooks = {"response": lambda r, *args, **kwargs: r.raise_for_status()}
 
 # Get info for remote files.
-r = session.get(url, params = access_token)
-remotefiles = [{"filename": i["filename"], "checksum": i["checksum"], "id": i["id"]} for i in r.json()]
+r = session.get(url, params=access_token)
+remotefiles = [
+    {"filename": i["filename"], "checksum": i["checksum"], "id": i["id"]}
+    for i in r.json()
+]
 
 # Create tar.gz file for upload.
 zipfile = list(set([re.sub("_\d+", "", file) for file in files]))[0] + ".tar.gz"
 cmd = ["tar", "-cvzf", zipfile] + files
-p = Popen(cmd, stdout = PIPE, stderr = PIPE)
+p = Popen(cmd, stdout=PIPE, stderr=PIPE)
 stout, stderr = p.communicate()
 if p.returncode != 0:
     errmsg = "%s. Code: %s" % (stderr.strip(), p.returncode)
@@ -57,33 +61,56 @@ if p.returncode != 0:
 checksum = md5(zipfile)
 
 # Check if zipfile or checksum present in remotefiles.
-remotefile = [i for i in remotefiles if os.path.basename(zipfile) in i["filename"] or checksum in i["checksum"]]
+remotefile = [
+    i
+    for i in remotefiles
+    if os.path.basename(zipfile) in i["filename"] or checksum in i["checksum"]
+]
 
 # Upload, if file is not present.
 # Needs to be tested what happens if we have same checksum under different file names.
 if len(remotefile) == 0:
     print("Uploading {} to Zenodo.".format(zipfile))
     with open(zipfile, "rb") as handle:
-        r = session.post(url, params = access_token, 
-                                data = {"filename": str(zipfile)}, 
-                               files = {"file": handle})
-elif remotefile[0]["checksum"] == checksum and remotefile[0]["filename"] != remotefile[0]["filename"]:
+        r = session.post(
+            url,
+            params=access_token,
+            data={"filename": str(zipfile)},
+            files={"file": handle},
+        )
+elif (
+    remotefile[0]["checksum"] == checksum
+    and remotefile[0]["filename"] != remotefile[0]["filename"]
+):
     # Rename if checksum matches but not filename.
-    print("Renaming {} to {}.".format(remotefile[0]['filename'], remotefile[0]['filename']))
-    r = session.put(os.path.join(url, remotefile[0]["id"]), 
-                          params = access_token, 
-                            data = {"filename": str(zipfile)})
-elif remotefile[0]["checksum"] != checksum and remotefile[0]["filename"] == os.path.basename(zipfile):
+    print(
+        "Renaming {} to {}.".format(
+            remotefile[0]["filename"], remotefile[0]["filename"]
+        )
+    )
+    r = session.put(
+        os.path.join(url, remotefile[0]["id"]),
+        params=access_token,
+        data={"filename": str(zipfile)},
+    )
+elif remotefile[0]["checksum"] != checksum and remotefile[0][
+    "filename"
+] == os.path.basename(zipfile):
     # File checksum does not match, delete remote file and upload fresh one.
-    print("Deleting remote file {} with checksum {}"
-          " and replacing it with new file with checksum {}.".format(remotefile[0]["filename"], remotefile[0]["checksum"], checksum))
-    r = session.delete(os.path.join(url, remotefile[0]["id"]), 
-                          params = access_token)
+    print(
+        "Deleting remote file {} with checksum {}"
+        " and replacing it with new file with checksum {}.".format(
+            remotefile[0]["filename"], remotefile[0]["checksum"], checksum
+        )
+    )
+    r = session.delete(os.path.join(url, remotefile[0]["id"]), params=access_token)
     with open(zipfile, "rb") as handle:
-        r = session.post(url, params = access_token, 
-                                data = {"filename": str(zipfile)}, 
-                               files = {"file": handle})
+        r = session.post(
+            url,
+            params=access_token,
+            data={"filename": str(zipfile)},
+            files={"file": handle},
+        )
 else:
-    print("Doing nothing."
-      " File {} is already uploaded!".format(zipfile))
+    print("Doing nothing." " File {} is already uploaded!".format(zipfile))
     pass
