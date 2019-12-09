@@ -103,3 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 .Rproj.user
+
+# Snakemake stuff
+*.snakemake
+
+# vscode stuff
+.vscode
