@@ -1,18 +1,16 @@
 import subprocess
 from os.path import dirname
 
+# Getting taxa for query
 params = snakemake.params
 
-taxdict = {}
+# Getting taxid lists
 for k, v in params.items():
-    cmd = "get_species_taxids.sh -t {}".format(v)
-    process = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
-    taxdict.update({k: process.stdout})
+    taxlist = []
+    for i in v:
+        cmd = "get_species_taxids.sh -t {}".format(i)
+        process = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
+        taxlist.append(process.stdout)
+    with open(snakemake.output[k], "wt") as f:
+        f.write("".join(taxlist))
 
-vir, neg = map(lambda keys: {x: taxdict[x] for x in keys}.values(), [["viruses"], list(set(params.keys()) - set(["viruses"]))])
-
-with open(snakemake.output["vir"], "wt") as f:
-    f.write(list(vir)[0])
-
-with open(snakemake.output["neg"], "wt") as f:
-    f.write("".join(neg))
