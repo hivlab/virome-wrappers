@@ -1,0 +1,12 @@
+
+HOST_TAXID = 9606
+
+rule taxids_list:
+    output:
+      viruses = "viruses.taxids",
+      negative = "negative.taxids"
+    params: 
+      viruses = 10239, 
+      negative = [HOST_TAXID, 12908]
+    wrapper:
+        "https://raw.githubusercontent.com/avilab/virome-wrappers/master/blast/taxidslist"
