@@ -1,15 +1,18 @@
-from snakemake.shell import shell
+import subprocess
 from os.path import dirname
 
-outdir = dirname(snakemake.output[0])
-if len(outdir) == 0:
-    outdir = "."
-taxdict = snakemake.params
+params = snakemake.params
 
-for k, v in taxdict.items():
-    shell("get_species_taxids.sh -t {} > {}/{}.taxid".format(v, outdir, k))
+taxdict = {}
+for k, v in params.items():
+    cmd = "get_species_taxids.sh -t {}".format(v)
+    process = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, universal_newlines=True)
+    taxdict.update({k: process.stdout})
 
-neg_taxid_files = [
-    "{}/{}.taxid".format(outdir, k) for k, v in taxdict.items() if k != "viruses"
-]
-shell("cat {neg_taxid_files} > {outdir}/negative.taxid")
+vir, neg = map(lambda keys: {x: taxdict[x] for x in keys}.values(), [["viruses"], list(set(params.keys()) - set(["viruses"]))])
+
+with open(snakemake.output["vir"], "wt") as f:
+    f.write(list(vir)[0])
+
+with open(snakemake.output["neg"], "wt") as f:
+    f.write("".join(neg))
