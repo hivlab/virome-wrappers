@@ -8,12 +8,12 @@ from os.path import dirname
 
 # Check inputs/arguments.
 inputs = dict(snakemake.input)
+input_names = list(inputs.keys())
+input_elements = sum([input_names == e for e in [["pe1", "pe2"], "pe12", "se"]])
 input_error_msg = (
     "Input must contain named elements, either 'pe1' and 'pe2' or 'pe12' or 'se'."
 )
-assert isinstance(inputs, type({})), "Input is not a dictionary. " + input_error_msg
-input_names = list(inputs.keys())
-assert any([input_names == e for e in [["pe1", "pe2"], "pe12", "se"]]), input_error_msg
+assert input_elements == 1, input_error_msg
 
 # Extract arguments.
 extra = snakemake.params.get("extra", "")
