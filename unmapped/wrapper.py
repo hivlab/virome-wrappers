@@ -6,15 +6,9 @@ extra = snakemake.params.get("extra", "")
 
 # Preprocessing command to run.
 commands = [
-<<<<<<< HEAD
     "reformat.sh in={snakemake.input} out={snakemake.output.fastq} unmappedonly primaryonly {reformat_fastq_extra}",
     "reformat.sh in={snakemake.output.fastq} out={snakemake.output.fasta} {reformat_fasta_extra}",
 ]
-=======
-            "reformat.sh in={snakemake.input} out={snakemake.output.fastq} unmappedonly primaryonly {reformat_fastq_extra} {extra}",
-            "reformat.sh in={snakemake.output.fastq} out={snakemake.output.fasta} {reformat_fasta_extra} {extra}"
-            ]
->>>>>>> master
 
 # Run preprocessing commands.
 for cmd in commands:
