@@ -11,11 +11,10 @@ for k, v in params.items():
             ["get_species_taxids.sh", "-t", str(i)],
             check=True,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
         if "esearch error" in p.stdout:
-            raise Exception(p.stdout)
+            raise Exception("Querying NCBI taxonomy db failed, please try again.\n{}".format(p.stdout))
         else:
             with open(snakemake.output[k], "wt") as f:
                 f.write(p.stdout)
