@@ -1,0 +1,20 @@
+
+rule assemble:
+    input:
+        pe1 = "1.fq.gz",
+        pe2 = "2.fq.gz"
+    output:
+        contigs = "assembly/final.contigs.fa"
+    params:
+        extra = "--presets meta-large -m5e9 --verbose"
+    threads: 2
+    wrapper:
+        "https://raw.githubusercontent.com/avilab/virome-wrappers/master/assembly/megahit"
+
+rule reads:
+    output: "1.fq.gz", "2.fq.gz"
+    shell:
+        """
+        curl -o- ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR752/007/SRR7521507/SRR7521507_1.fastq.gz | gzip -cd | head -4000000 | gzip -1 > {output[0]}
+        curl -o- ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR752/007/SRR7521507/SRR7521507_2.fastq.gz | gzip -cd | head -4000000 | gzip -1 > {output[1]}
+        """
