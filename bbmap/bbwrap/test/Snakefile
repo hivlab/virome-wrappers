@@ -1,0 +1,12 @@
+
+rule bbwrap:
+    input:
+        in1 = "sample1.fq.gz",
+        in2 = "sample2.fq.gz",
+        ref = "phiX174_ill.ref.fa"
+    output:
+        out = "mapped.sam"
+    params:
+        extra = ""
+    wrapper:
+        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap"
