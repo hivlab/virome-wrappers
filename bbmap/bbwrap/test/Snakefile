@@ -9,4 +9,4 @@ rule bbwrap:
     params:
         extra = ""
     wrapper:
-        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap"
+        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbwrap"
