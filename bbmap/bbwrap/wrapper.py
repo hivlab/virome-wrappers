@@ -5,6 +5,7 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 
+
 # Function to concatenate arguments with names
 def arg_c(args):
     argdict = dict(args)
@@ -21,6 +22,19 @@ inputs = arg_c(snakemake.input)
 
 # Replace 'input' with 'in'
 inputs = inputs.replace("input", "in")
+
+# Check for SE inputs and
+if "in1" in inputs.keys():
+    n_files = [len(v) for k, v in inputs.items() if k in ["in1", "in2"]]
+    n_files_diff = n_files[0] - n_files[1]
+    if n_files_diff < 0:
+        raise Exception("Please check inputs: more elements in in2 than in in1.")
+    else:
+        inputs = {
+            k: (",".join(v + ["null" * n_files_diff]) if "in2" in k else ",".join(v))
+            for k, v in inputs.items()
+        }
+
 
 # Pass only bbmap/bbwrap output parameters
 bbmap_outputs = [
@@ -59,5 +73,8 @@ extra = snakemake.params.get("extra", "")
 # Setup log
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
+
 # Run commands
 shell("(bbwrap.sh {inputs} {outputs} {extra}) {log}")
+if "bamscript=bs.sh" in extra:
+    shell("./bs.sh")

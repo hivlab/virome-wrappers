@@ -5,8 +5,10 @@ rule bbwrap:
         in2 = "sample2.fq.gz",
         ref = "phiX174_ill.ref.fa.gz"
     output:
-        out = "mapped.sam"
+        outm = "mapped.sam"
     params:
-        extra = ""
+        extra = "-Xmx1g nodisk bamscript=bs.sh"
+    log:
+        "align2.log"
     wrapper:
-        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbwrap"
+        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbmap/bbwrap"
