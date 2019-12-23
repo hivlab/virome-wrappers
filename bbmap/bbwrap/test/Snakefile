@@ -3,7 +3,7 @@ rule bbwrap:
     input:
         in1 = "sample1.fq.gz",
         in2 = "sample2.fq.gz",
-        ref = "phiX174_ill.ref.fa"
+        ref = "phiX174_ill.ref.fa.gz"
     output:
         out = "mapped.sam"
     params:
