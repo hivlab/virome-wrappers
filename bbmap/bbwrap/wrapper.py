@@ -16,12 +16,7 @@ def arg_c(args):
     argstr = " ".join(arglist)
     return argstr
 
-
-# Get inputs
-inputs = arg_c(snakemake.input)
-
-# Replace 'input' with 'in'
-inputs = inputs.replace("input", "in")
+inputs = snakemake.input
 
 # Check for SE inputs and
 if "in1" in inputs.keys():
@@ -34,6 +29,13 @@ if "in1" in inputs.keys():
             k: (",".join(v + ["null" * n_files_diff]) if "in2" in k else ",".join(v))
             for k, v in inputs.items()
         }
+
+
+# Get inputs
+inputs = arg_c(inputs)
+
+# Replace 'input' with 'in'
+inputs = inputs.replace("input", "in")
 
 
 # Pass only bbmap/bbwrap output parameters
