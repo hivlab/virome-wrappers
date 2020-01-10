@@ -1,12 +1,12 @@
 
 rule preprocess:
     input:
-        "sample1.fq.gz", "sample2.fq.gz"
+        "sample1.fq.gz", 
+        "sample2.fq.gz"
     output:
         adapters = "adapters.fa",
         merged = "merged.fq",
         unmerged = "unmerged.fq",
-        reads = "reads.fq",
         trimmed = "trimmed.fq",
         sampled = "sampled.fq"
     params:
