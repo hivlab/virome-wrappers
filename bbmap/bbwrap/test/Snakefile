@@ -5,7 +5,8 @@ rule bbwrap:
         in2 = "sample2.fq.gz",
         ref = "phiX174_ill.ref.fa.gz"
     output:
-        outm = "mapped.sam"
+        outm = "mapped.sam",
+        bam = "mapped_sorted.bam"
     params:
         extra = "-Xmx1g nodisk bamscript=bs.sh"
     log:
