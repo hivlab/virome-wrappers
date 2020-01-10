@@ -11,11 +11,10 @@ if snakemake.threads:
 else:
     threads = 0
 
+if "psi-cd-est.pl" in program:
+    cmd = "({program} -i {snakemake.input} -o {snakemake.output.repres} {extra}) {log}"
+else:
+    cmd = "({program} -i {snakemake.input} -o {snakemake.output.repres} -T {threads} {extra}) {log}"
 
-shell(
-    "({program}"
-    " -i {snakemake.input}"
-    " -o {snakemake.output.repres}"
-    " -T {threads}"
-    " {extra}) {log}"
-)
+
+shell(cmd)

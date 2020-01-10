@@ -1,0 +1,11 @@
+rule cdhit:
+    input: 
+        "SRR5558035_good-contigs.fa"
+    output:
+        repres = "clustered-contigs.fa"
+    params:
+        program = "psi-cd-hit",
+        extra = "-c 0.9 -G 1 -g 1 -prog megablast"
+    threads: 4
+    wrapper:
+        "file:../wrapper.py"
