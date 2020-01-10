@@ -4,4 +4,4 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - cd-hit=4.6.8=0
+  - cd-hit=4.8.1
