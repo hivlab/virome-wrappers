@@ -9,9 +9,9 @@ from snakemake.shell import shell
 bbduk = snakemake.params.get("bbduk", "")
 
 # Subsampling parameters.
-frac = snakemake.params.get("frac", "1")
+frac = snakemake.params.get("frac", "1.0")
 seed = snakemake.params.get("seed", "11")
-print("Sampling {} of reads using seed {}.".format(frac, seed))
+print("Sampling {} fraction of reads & using seed {}.".format(frac, seed))
 
 # Preprocessing command to run.
 commands = [
@@ -26,8 +26,8 @@ for cmd in commands:
     shell(cmd)
 
 # If sample fraction is given, subsample reads using seed.
-# Otherwise symlink trimmed reads to final output.
-if frac and frac < 1:
+# Otherwise copy trimmed reads to final output.
+if frac and float(frac) < 1.0:
     shell(
         "reformat.sh in={snakemake.output.trimmed} out={snakemake.output.sampled} samplerate={frac} sampleseed={seed}"
     )
