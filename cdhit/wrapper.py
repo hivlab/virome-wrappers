@@ -7,7 +7,7 @@ log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 # Parse threads flag
 if snakemake.threads:
-    threads = snakemake.threads[0]
+    threads = snakemake.threads
 else:
     threads = 0
 
