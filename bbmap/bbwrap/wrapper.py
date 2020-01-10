@@ -10,22 +10,17 @@ from snakemake.shell import shell
 def arg_c(args, n):
     argdict = dict(args)
     # Convert values to list
-    argdict = {
-            k: (v if isinstance(v, type([])) else [v])
-            for k, v in argdict.items()
-        }
+    argdict = {k: (v if isinstance(v, type([])) else [v]) for k, v in argdict.items()}
     # Merge multiple argument values to comma separated str
     argdict = {
-            k: (",".join(v + ["null"] * n_files_diff) if "in2" in k else ",".join(v))
-            for k, v in argdict.items()
-        }
-    # Parse arguments for command line
-    arglist = [
-        "{}={}".format(k, v)
+        k: (",".join(v + ["null"] * n_files_diff) if "in2" in k else ",".join(v))
         for k, v in argdict.items()
-    ]
+    }
+    # Parse arguments for command line
+    arglist = ["{}={}".format(k, v) for k, v in argdict.items()]
     argstr = " ".join(arglist)
     return argstr
+
 
 inputs = snakemake.input
 

@@ -14,7 +14,11 @@ for k, v in params.items():
             universal_newlines=True,
         )
         if "esearch error" in p.stdout:
-            raise Exception("Querying NCBI taxonomy db failed, please try again.\n{}".format(p.stdout))
+            raise Exception(
+                "Querying NCBI taxonomy db failed, please try again.\n{}".format(
+                    p.stdout
+                )
+            )
         else:
             with open(snakemake.output[k], "wt") as f:
                 f.write(p.stdout)
