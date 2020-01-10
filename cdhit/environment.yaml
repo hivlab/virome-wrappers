@@ -5,3 +5,4 @@ channels:
   - defaults
 dependencies:
   - cd-hit=4.8.1
+  - blast>=2.8.0
