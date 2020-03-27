@@ -65,6 +65,7 @@ bbmap_outputs = [
     "covhist",
     "basecov",
     "bincov",
+    "statsfile",
 ]
 outputs = dict(snakemake.output)
 outputs = {k: v for k, v in outputs.items() if k in bbmap_outputs}
