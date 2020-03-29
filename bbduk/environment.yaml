@@ -1,0 +1,8 @@
+name: bbtools
+channels:
+  - bioconda
+  - defaults
+  - conda-forge
+dependencies:
+  - bbmap=38.49
+  - openjdk=8.0.152

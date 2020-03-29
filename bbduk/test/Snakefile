@@ -1,0 +1,18 @@
+
+rule preprocess:
+    input:
+        in1 = "sample1.fq.gz", 
+        in2 = "sample2.fq.gz"
+    output:
+        out1 = "clean1.fq",
+        out2 = "clean2.fq",
+        gchist = "gchist.txt",
+        aqhist = "aqhist.txt",
+        lhist = "lhist.txt",
+        mhist = "mhist.txt",
+        bhist = "bhist.txt"
+    params:
+        extra = "hdist=1 maq=20 tpe tbo -da"
+    log: "bbduk.log"
+    wrapper:
+        "file:../wrapper.py"
