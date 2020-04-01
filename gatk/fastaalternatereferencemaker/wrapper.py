@@ -11,7 +11,7 @@ indexfeature = snakemake.params.get("indexfeature", "")
 refmaker = snakemake.params.get("refmaker", "")
 bam = snakemake.params.get("bam", "")
 if bam:
-    refmaker = " ".join(refmaker, "-I", bam)
+    refmaker = " ".join([refmaker, "-I", bam])
 
 
 shell(
