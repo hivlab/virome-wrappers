@@ -6,5 +6,3 @@ channels:
 dependencies:
   - bbmap =38
   - openjdk =8.0.152
-  - fastq_utils
-  

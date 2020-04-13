@@ -27,12 +27,21 @@ assert len(snakemake.input) in [1, 2], "Input must have one or two files."
 if len(snakemake.input) == 1:
     inputs = "in={}"
 elif len(snakemake.input) == 2:
-    inputs = "in={} in2={}"
+    inputs = "in1={} in2={}"
 
 inputs = inputs.format(*snakemake.input)
 
 # Pass only reformat outputs
-reformat_outputs = ["out", "out2", "dump"]
+reformat_outputs = [
+    "out",
+    "outu",
+    "outu1",
+    "outu2",
+    "outinsert",
+    "outadapter",
+    "outc",
+    "ihist",
+]
 outputs = dict(snakemake.output)
 outputs = {k: v for k, v in outputs.items() if k in reformat_outputs}
 
@@ -47,6 +56,6 @@ log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
     """
-    (filterbytile.sh {inputs} {outputs} {extra}) {log}
+    (bbmerge.sh {inputs} {outputs} {extra}) {log}
     """
 )

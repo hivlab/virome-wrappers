@@ -21,6 +21,7 @@ def arg_c(args, n):
     argstr = " ".join(arglist)
     return argstr
 
+
 assert len(snakemake.input) in [1, 2], "Input must have one or two files."
 
 if len(snakemake.input) == 1:
