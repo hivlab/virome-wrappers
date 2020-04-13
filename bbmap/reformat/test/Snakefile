@@ -1,0 +1,23 @@
+
+rule reformat:
+    input:
+        "sample1.fq.gz", 
+        "sample2.fq.gz"
+    output:
+        out = "interleaved.fq.gz",
+        bhist = "bhist.txt",
+        qhist = "qhist.txt",
+        aqhist = "aqhist.txt",
+        bqhist = "bqhist.txt",
+        lhist = "lhist.txt",
+        gchist = "gchist.txt"
+    params:
+        extra = "gcbins=auto -Xmx1g"
+    log:
+        "reformat.log"
+    resources:
+        runtime = 10,
+        mem_mb = 1000
+    wrapper:
+        "file:../wrapper.py"
+#        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbmap/bbwrap"
