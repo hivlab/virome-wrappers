@@ -4,5 +4,5 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - bbmap=38.49
+  - bbmap =38
   - openjdk=8.0.152

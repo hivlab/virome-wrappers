@@ -8,8 +8,13 @@ rule bbwrap:
         outm = "mapped.sam",
         bam = "mapped_sorted.bam"
     params:
-        extra = "-Xmx1g nodisk bamscript=bs.sh"
+        extra = "nodisk bamscript=bs.sh",
+        Xmx = 1000
     log:
         "align2.log"
+    resources:
+        runtime = 10,
+        mem_mb = 1000
     wrapper:
-        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbmap/bbwrap"
+        "file:../wrapper.py"
+#        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbmap/bbwrap"

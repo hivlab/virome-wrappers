@@ -1,0 +1,13 @@
+
+rule shred:
+    input: 
+        "contigs.fa"
+    output:
+        "shredded_contigs.fa"
+    params:
+        extra = "length=500 overlap=20 equal=t overwrite=t"
+    log: 
+        "shredding.log"
+    wrapper:
+        "https://raw.githubusercontent.com/avilab/virome-wrappers/master/bbmap/shred"
+    
