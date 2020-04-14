@@ -109,3 +109,14 @@ venv.bak/
 
 # vscode profile
 .vscode
+
+# bbtools
+bbtools/bbduk/test/SRR*
+bbtools/bbwrap/test/mapped*
+bbtools/bbwrap/test/bs.sh
+bbtools/reformat/test/*.txt
+bbtools/reformat/test/*.fq.gz
+bbtools/shred/test/shredded*
+
+# bedtools
+bedtools/genomecov/test/*.txt
