@@ -6,7 +6,12 @@ __license__ = "MIT"
 import os
 from snakemake.shell import shell
 import tempfile
-from pathlib import Path
+
+def file_name_prefix(file_path):
+    file_name = os.path.basename(file_path)
+    separator_index = file_name.index(".")
+    return file_name[:separator_index]
+
 
 _config = snakemake.params["fastq_screen_config"]
 subset = snakemake.params.get("subset", 100000)
@@ -30,7 +35,7 @@ else:
 
 # fastq_screen hard-codes filenames according to this prefix. We will send
 # hard-coded output to a temp dir, and then move them later.
-prefix = os.path.basename(snakemake.input[0].split(Path(snakemake.input[0]).suffix)[0])
+prefix = file_name_prefix(snakemake.input[0])
 tempdir = tempfile.mkdtemp()
 
 shell(
