@@ -2,7 +2,7 @@
 import os
 # Path to reference genomes
 HOST_GENOME = os.environ["REF_GENOME_HUMAN_MASKED"]
-RRNA_DB = os.environ["SILVA_SSU"]
+RRNA_DB = os.environ["SILVA"]
 
 fastq_screen_config = {
   "database": {
@@ -13,7 +13,7 @@ fastq_screen_config = {
 
 rule fastq_screen:
     input:
-        "cleaned1.fq"
+        "sample.fq.gz"
     output:
         txt = "qc/fastq_screen.txt",
         png = "qc/fastq_screen.png"
