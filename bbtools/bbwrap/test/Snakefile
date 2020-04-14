@@ -1,4 +1,16 @@
 
+rule all:
+    input:
+        "mapped.sam",
+        "mapped_sorted.bam",
+        "mapped_sorted.bam.bai",
+        "stats.txt",
+        "mapped.fq.gz",
+        "unmapped.fq.gz",
+        "stats2.txt",
+        "mapped3.sam",
+        "stats3.txt"
+
 rule bbwrap:
     input:
         in1 = "sample1.fq.gz",
@@ -6,10 +18,29 @@ rule bbwrap:
         ref = "phiX174_ill.ref.fa.gz"
     output:
         outm = "mapped.sam",
-        bam = "mapped_sorted.bam"
+        bam = "mapped_sorted.bam",
+        statsfile = "stats.txt"
     params:
-        extra = "nodisk bamscript=bs.sh",
-        Xmx = 1000
+        extra = "nodisk -Xmx1g bamscript=bs.sh"
+    log:
+        "align.log"
+    resources:
+        runtime = 10,
+        mem_mb = 1000
+    wrapper:
+        "file:../wrapper.py"
+#        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbmap/bbwrap"
+
+rule bbwrap2:
+    input:
+        input = "sample.fq.gz",
+        ref = "phiX174_ill.ref.fa.gz"
+    output:
+        outm = "mapped.fq.gz",
+        outu = "unmapped.fq.gz",
+        statsfile = "stats2.txt"
+    params:
+        extra = "nodisk  -Xmx1g"
     log:
         "align2.log"
     resources:
@@ -18,3 +49,21 @@ rule bbwrap:
     wrapper:
         "file:../wrapper.py"
 #        "https://raw.githubusercontent.com/avilab/virome-wrappers/feature/bbwrap/bbmap/bbwrap"
+
+rule bbwrap3:
+    input:
+        in1 = "sample1.fq.gz",
+        in2 = "sample2.fq.gz",
+        ref = "phiX174_ill.ref.fa.gz"
+    output:
+        outm = "mapped3.sam",
+        statsfile = "stats3.txt"
+    params:
+        extra = "nodisk -Xmx1g"
+    log:
+        "align3.log"
+    resources:
+        runtime = 10,
+        mem_mb = 1000
+    wrapper:
+        "file:../wrapper.py"
