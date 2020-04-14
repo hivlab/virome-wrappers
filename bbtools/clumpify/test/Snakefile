@@ -1,0 +1,32 @@
+
+rule all:
+    input:
+        "clumpify.fq.gz", 
+        "clumpify1.fq.gz", 
+        "clumpify2.fq.gz"
+
+rule clumpify:
+    input:
+        in1 = "sample.fq.gz"
+    output:
+        out1 = "clumpify.fq.gz"
+    params:
+        extra = "dedupe optical -Xmx4g -da" # suppress assertions
+    log: 
+        "clumpify.log"
+    wrapper:
+        "file:../wrapper.py"   
+
+rule clumpify2:
+    input:
+        in1 = "sample1.fq.gz",
+        in2 = "sample2.fq.gz"
+    output:
+        out1 = "clumpify1.fq.gz",
+        out2 = "clumpify2.fq.gz"
+    params:
+        extra = "dedupe optical -Xmx4g -da" # suppress assertions
+    log: 
+        "clumpify2.log"
+    wrapper:
+        "file:../wrapper.py"   
