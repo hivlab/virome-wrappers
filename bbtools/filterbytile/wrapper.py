@@ -6,38 +6,16 @@ __license__ = "MIT"
 from snakemake.shell import shell
 import re
 
-# Function to concatenate arguments with names
-def arg_c(args, n):
-    argdict = dict(args)
-    # Convert values to list
-    argdict = {k: (v if isinstance(v, type([])) else [v]) for k, v in argdict.items()}
-    # Merge multiple argument values to comma separated str
-    argdict = {
-        k: (",".join(v + ["null"] * n_files_diff) if "in2" in k else ",".join(v))
-        for k, v in argdict.items()
-    }
-    # Parse arguments for command line
-    arglist = ["{}={}".format(k, v) for k, v in argdict.items()]
-    argstr = " ".join(arglist)
-    return argstr
+
+def parseIO(d):
+    return " ".join([("in" if k == "input" else k) + "=" + v for k, v in d.items()])
 
 
-assert len(snakemake.input) in [1, 2], "Input must have one or two files."
+assert len(snakemake.input) in [1, 2], "Number of inputs must be one or two."
 
-if len(snakemake.input) == 1:
-    inputs = "in={}"
-elif len(snakemake.input) == 2:
-    inputs = "in={} in2={}"
 
-inputs = inputs.format(*snakemake.input)
-
-# Pass only reformat outputs
-reformat_outputs = ["out", "out2", "dump"]
-outputs = dict(snakemake.output)
-outputs = {k: v for k, v in outputs.items() if k in reformat_outputs}
-
-# Parse outputs to argument string
-outputs = arg_c(outputs, 0)
+inputs = parseIO(snakemake.input)
+outputs = parseIO(snakemake.output)
 
 # Get extra arguments
 extra = snakemake.params.get("extra", "")
