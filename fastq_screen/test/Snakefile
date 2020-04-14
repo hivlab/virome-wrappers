@@ -20,6 +20,8 @@ rule fastq_screen:
     params:
         fastq_screen_config=fastq_screen_config,
         subset = 100000
+    log:
+        "fastq_screen.log"
     threads: 4
     wrapper:
         "file:../wrapper.py"
