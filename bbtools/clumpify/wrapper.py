@@ -9,12 +9,6 @@ from snakemake.shell import shell
 def parseIO(d):
     return " ".join([("in" if k == "input" else k) + "=" + v for k, v in d.items()])
 
-
-assert len(snakemake.input) == len(
-    snakemake.output
-), "Number of inputs and outputs must be equal (one or two)."
-
-
 inputs = parseIO(snakemake.input)
 outputs = parseIO(snakemake.output)
 
