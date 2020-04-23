@@ -1,0 +1,11 @@
+
+rule extract:
+    input:
+        "snpeff.vcf"
+    output:
+        "output.txt"
+    params:
+        extra = "-s ',' -e '.'",
+        fieldnames = "CHROM POS REF ALT QUAL AO SAF SAR RPR RPL FILTER AF SB DP ANN[*].IMPACT ANN[*].EFFECT ANN[*].GENE ANN[*].CODON"
+    wrapper:
+        "file:../wrapper.py"
