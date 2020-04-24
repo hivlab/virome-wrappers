@@ -5,8 +5,8 @@ __license__ = "MIT"
 
 
 from snakemake.shell import shell
-
+extra = snakemake.params.get("extra", "")
 
 shell(
-    "lofreq call-parallel --pp-threads {snakemake.threads} -f {snakemake.input.ref} -o {snakemake.output[0]} {snakemake.input.bam}"
+    "lofreq call-parallel {extra} --pp-threads {snakemake.threads} -f {snakemake.input.ref} -o {snakemake.output[0]} {snakemake.input.bam}"
 )
