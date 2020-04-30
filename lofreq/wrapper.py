@@ -8,5 +8,5 @@ from snakemake.shell import shell
 extra = snakemake.params.get("extra", "")
 
 shell(
-    "lofreq call-parallel {extra} --pp-threads {snakemake.threads} -f {snakemake.input.ref} -o {snakemake.output[0]} {snakemake.input.bam}"
+    "lofreq call {extra} -f {snakemake.input.ref} -o {snakemake.output[0]} {snakemake.input.bam}"
 )
