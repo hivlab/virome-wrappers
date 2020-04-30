@@ -16,34 +16,29 @@ assert (
 ), "Please input a por_n parameter: % of total length of being masked."
 
 
+def seq_filter(sequence, min_length, por_n):
+    return (float(len(sequence)) - float(sequence.count("N"))) >= min_length and (
+        float(sequence.count("N")) / float(len(sequence))
+    ) * 100 <= por_n
+
+
 def filter_N(masked, masked_filt, min_length, por_n, original=None, original_filt=None):
     """Filters out sequences with many N-s.
-  Filters out sequeces with less than or equal to min_length non-N bases
-  and sequences with more than por_n % N-s.
-  """
-    ma = SeqIO.parse(str(masked), "fasta")
+    Filters out sequeces with less than or equal to min_length non-N bases
+    and sequences with more than por_n % N-s.
+    """
     if original is not None and original_filt is not None:
-        original = SeqIO.index(str(original), "fasta")
-        with open(masked_filt, "w") as maf, open(original_filt, "w") as orf:
-            for record in ma:
-                sequence = str(record.seq).upper()
-                if (
-                    (float(len(sequence)) - float(sequence.count("N"))) >= min_length
-                    and (float(sequence.count("N")) / float(len(sequence))) * 100
-                    <= por_n
-                ):
-                    SeqIO.write(record, maf, "fasta")
-                    SeqIO.write(original[record.id], orf, "fasta")
+        with open(masked_filt, "w") as masked_filt_handle, open(original_filt, "w") as original_filt_handle:
+            for masked_record, original_record in zip(SeqIO.parse(masked, "fasta"), SeqIO.parse(original, "fasta")):
+                if seq_filter(masked_record.seq, min_length, por_n):
+                    SeqIO.write(masked_record, masked_filt_handle, "fasta")
+                    SeqIO.write(original_record, original_filt_handle, "fasta")
+
     else:
-        with open(masked_filt, "w") as maf:
-            for record in ma:
-                sequence = str(record.seq).upper()
-                if (
-                    (float(len(sequence)) - float(sequence.count("N"))) >= min_length
-                    and (float(sequence.count("N")) / float(len(sequence))) * 100
-                    <= por_n
-                ):
-                    SeqIO.write(record, maf, "fasta")
+        with open(masked_filt, "w") as masked_filt_handle:
+            for record in SeqIO.parse(masked, "fasta"):
+                if seq_filter(record.seq, min_length, por_n):
+                    SeqIO.write(record, masked_filt_handle, "fasta")
 
 
 if __name__ == "__main__":

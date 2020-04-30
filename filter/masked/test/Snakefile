@@ -1,0 +1,13 @@
+
+rule filter:
+    input:
+        original = "repeatmasker_5.fa",
+        masked = "repeatmasker_5.fa.masked"
+    output:
+        masked_filt = "repmaskedgood_5.fa",
+        original_filt = "unmaskedgood_5.fa"
+    params:
+        min_length = 100,
+        por_n = 30
+    wrapper:
+        "file:../wrapper.py"
