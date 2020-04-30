@@ -9,6 +9,7 @@ from snakemake.shell import shell
 def parseIO(d):
     return " ".join([("in" if k == "input" else k) + "=" + v for k, v in d.items()])
 
+
 inputs = parseIO(snakemake.input)
 outputs = parseIO(snakemake.output)
 

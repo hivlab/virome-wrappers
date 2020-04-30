@@ -7,6 +7,4 @@ __license__ = "MIT"
 from snakemake.shell import shell
 
 
-shell(
-    "picard CreateSequenceDictionary R={snakemake.input} O={snakemake.output}"
-)
+shell("picard CreateSequenceDictionary R={snakemake.input} O={snakemake.output}")

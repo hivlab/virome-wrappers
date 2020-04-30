@@ -15,9 +15,9 @@ if bam:
 
 
 shell(
-        "gatk IndexFeatureFile {indexfeature} -I {snakemake.input.vcf} -O {snakemake.output.idx}"
-    )
+    "gatk IndexFeatureFile {indexfeature} -I {snakemake.input.vcf} -O {snakemake.output.idx}"
+)
 
 shell(
-        "gatk FastaAlternateReferenceMaker {refmaker} -V {snakemake.input.vcf} -R {snakemake.input.ref} -O {snakemake.output.fasta}"
-    )
+    "gatk FastaAlternateReferenceMaker {refmaker} -V {snakemake.input.vcf} -R {snakemake.input.ref} -O {snakemake.output.fasta}"
+)

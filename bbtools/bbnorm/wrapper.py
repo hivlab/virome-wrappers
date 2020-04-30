@@ -4,6 +4,8 @@ __email__ = "tapa741@gmail.com"
 __license__ = "MIT"
 
 from snakemake.shell import shell
+
+
 def parseIO(d):
     return " ".join([("in" if k == "input" else k) + "=" + v for k, v in d.items()])
 

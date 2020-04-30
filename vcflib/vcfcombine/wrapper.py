@@ -7,6 +7,4 @@ __license__ = "MIT"
 from snakemake.shell import shell
 
 
-shell(
-    "vcfcombine {snakemake.input} > {snakemake.output}"
-)
+shell("vcfcombine {snakemake.input} > {snakemake.output}")
