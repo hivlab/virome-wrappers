@@ -135,9 +135,12 @@ class BlastTaxonomy(BlastDB):
             )
         consensus_taxonomy = pd.DataFrame(consensus_taxonomy)
         # Convert tax_ids to integers
-        consensus_taxonomy[self.ranks_of_interest] = consensus_taxonomy[
-            self.ranks_of_interest
-        ].apply(lambda x: pd.Series(x, dtype="Int64"))
+        ranks_avail = [
+            i for i in consensus_taxonomy.columns if i in self.ranks_of_interest
+        ]
+        consensus_taxonomy[ranks_avail] = consensus_taxonomy[ranks_avail].apply(
+            lambda x: pd.Series(x, dtype="Int64")
+        )
         return consensus_taxonomy
 
 
