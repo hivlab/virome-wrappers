@@ -1,0 +1,6 @@
+channels:
+  - bioconda
+  - defaults
+dependencies:
+  - lofreq=2.1.4
+  - samtools ==1.9
