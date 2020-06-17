@@ -9,6 +9,5 @@ extra = snakemake.params.get("extra", "")
 
 shell(
     "lofreq faidx {snakemake.input.ref} "
-    "&& lofreq viterbi {extra} -f {snakemake.input.ref} {snakemake.input.bam} "
-    "| samtools sort - > {snakemake.output[0]}"
+    "&& lofreq viterbi {extra} -f {snakemake.input.ref} -o {snakemake.output[0]} {snakemake.input.bam}"
 )
