@@ -6,8 +6,9 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 extra = snakemake.params.get("extra", "")
-pipe = snakemake.params.get("pipe", "")
 
 shell(
-    "lofreq viterbi {extra} -f {snakemake.input.ref} {snakemake.input.bam} {pipe} > {snakemake.output[0]}"
+    "lofreq faidx {snakemake.input.ref} \
+        && lofreq viterbi {extra} -f {snakemake.input.ref} {snakemake.input.bam} \
+        | samtools sort -o {snakemake.output[0]} - "
 )
