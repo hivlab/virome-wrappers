@@ -1,0 +1,16 @@
+rule genome_consensus:
+    input:
+        bam = "refgenome_sorted.bam",
+        ref = "NC_045512.fa",
+        vcf = "lofreq.vcf"
+    output:
+        vcfgz = "lofreq.vcf.gz",
+        consensus = "consensus.fa",
+        consensus_masked = "consensus_masked.fa",
+        bed = "refgenome.bed"
+    log:
+        "test.log"
+    params:
+        mask = 20,
+    wrapper:
+        "file:../wrapper.py"
