@@ -1,0 +1,37 @@
+channels:
+  - conda-forge
+  - cyclus
+  - goodman
+  - anaconda
+  - bioconda
+  - defaults
+dependencies:
+  - bcftools=1.8=h4da6232_3
+  - bedtools=2.29.2=h37cfd92_0
+  - bzip2=1.0.8=h0b31af3_2
+  - ca-certificates=2020.6.20=hecda079_0
+  - certifi=2020.6.20=py38h32f6830_0
+  - curl=7.71.0=hbdca1c0_0
+  - htslib=1.9=h3a161e8_7
+  - krb5=1.17.1=hddcf347_0
+  - libcurl=7.71.0=he6690cf_0
+  - libcxx=10.0.0=1
+  - libdeflate=1.0=h1de35cc_1
+  - libedit=3.1.20181209=hb402a30_0
+  - libffi=3.3=h0a44026_1
+  - libssh2=1.9.0=h39bdce6_2
+  - ncurses=6.1=h0a44026_1
+  - openssl=1.1.1g=h0b31af3_0
+  - pip=20.1.1=py38_1
+  - python=3.8.1=h359304d_1
+  - python_abi=3.8=1_cp38
+  - readline=7.0=h1de35cc_5
+  - samtools=1.9=h8aa4d43_12
+  - setuptools=47.3.1=py38_0
+  - sqlite=3.31.1=ha441bb4_0
+  - tk=8.6.10=hb0a8c7a_0
+  - wheel=0.34.2=py38_0
+  - xz=5.2.5=h1de35cc_0
+  - zlib=1.2.11=h1de35cc_3
+
+
