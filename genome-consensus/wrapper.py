@@ -9,6 +9,7 @@ from snakemake.shell import shell
 # Get extra arguments
 mask = snakemake.params.get("mask", 20)
 
+
 # Setup log
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
