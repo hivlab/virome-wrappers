@@ -8,6 +8,7 @@ import numpy as np
 import argparse
 import tarfile
 import re
+import math
 
 # Helper function to import tables
 def safely_read_csv(path, **kwargs):
@@ -86,7 +87,9 @@ class BlastTaxonomy(BlastDB):
                 hits = hits[hits["pident_rank"] == 1]
                 # Try to remove unidentified taxa
                 hits["name"] = hits[self.taxid_key].apply(
-                    lambda x: self.translate_to_names([x])[0]
+                    lambda x: "unidentified"
+                    if math.isnan(x)
+                    else self.translate_to_names([x])[0]
                 )
                 unidentified = hits["name"].apply(
                     lambda x: bool(re.search("unident", x))
