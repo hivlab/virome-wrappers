@@ -26,3 +26,16 @@ rule classify_old:
         taxid_key = "tax_id"
     wrapper: 
         "file:../wrapper.py"
+
+rule classify_all:
+    input: 
+        "blast-results/megablast-virus_5_mapped.tsv", 
+        "blast-results/blastn-virus_5_mapped.tsv", 
+        "blast-results/megablast-nt_5_mapped.tsv", 
+        "blast-results/blastn-nt_5_mapped.tsv"
+    output: 
+        "output/assemble/all_5.csv"
+    params:
+        pp_sway = 1
+    wrapper: 
+        "file:../wrapper.py"
