@@ -9,7 +9,7 @@ rule assemble:
         extra = "--presets meta-large -m5e9 --verbose"
     threads: 2
     wrapper:
-        "https://raw.githubusercontent.com/avilab/virome-wrappers/master/assembly/megahit"
+        "file:../wrapper.py"
 
 rule reads:
     output: "1.fq.gz", "2.fq.gz"

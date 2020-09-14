@@ -120,3 +120,6 @@ bbtools/shred/test/shredded*
 
 # bedtools
 bedtools/genomecov/test/*.txt
+
+# megahit
+assembly/megahit/test/assembly
