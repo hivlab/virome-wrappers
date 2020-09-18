@@ -37,17 +37,18 @@ def batch_iterator(iterator, batch_size):
 
 
 # Number of sequences in fasta file
-fasta_file = open(snakemake.input[0])
-
-seqs = sum([bool(search(r"^>", line)) for line in fasta_file])
+with open(snakemake.input[0]) as i:
+    seqs = sum([bool(search(r"^>", line)) for line in i])
 
 # Calculate batch size given number of files
-batch_size = ceil(seqs / snakemake.params[0])
+splits = snakemake.params.get("splits", 1)
+start = snakemake.params.get("start", 0)
+batch_size = ceil(seqs / splits)
 
 # Split sequences into chunks based on batch size and write into files
 record_iter = SeqIO.parse(snakemake.input[0], "fasta")
 
-for n, batch in enumerate(batch_iterator(record_iter, batch_size), start=1):
+for n, batch in enumerate(batch_iterator(record_iter, batch_size), start=start):
     output = [
         path for path in snakemake.output if search(r"[^0-9]{}[^0-9]+$".format(n), path)
     ]
