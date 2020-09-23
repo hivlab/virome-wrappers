@@ -6,7 +6,7 @@ __license__ = "MIT"
 import os
 import pandas as pd
 from Bio import SeqIO
-from pandas.io.common import EmptyDataError
+from pandas.errors import EmptyDataError
 
 
 def touch(fname, times=None):
