@@ -1,0 +1,16 @@
+
+rule sort_and_index:
+    input:
+        "mapped.sam"
+    output:
+        sorted = "sorted.bam",
+        index = "sorted.bam.bai"
+    params:
+        lambda wildcards, resources: f"-m {resources.mem_mb}M"
+    threads:
+        4
+    resources:
+        mem_mb = 4000,
+        runtime = 120
+    wrapper:
+        "file:../wrapper.py"
