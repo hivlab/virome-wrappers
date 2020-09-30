@@ -1,4 +1,8 @@
 
+rule all:
+    input: "renamed.fa", "renamed_dig.fa"
+
+
 rule rename:
     input:
         "seq.fa"
@@ -6,6 +10,19 @@ rule rename:
         "renamed.fa"
     params:
         sample = "XY123",
-        stub = "SARS-CoV-2/human/EU/{}/2020"
+        stub = "SARS-CoV-2/human/EU/{}/2020",
+        hexdigest = False
+    wrapper:
+        "file:../wrapper.py"
+
+rule rename_dig:
+    input:
+        "seq.fa"
+    output:
+        "renamed_dig.fa"
+    params:
+        sample = "XY123",
+        stub = "SARS-CoV-2/human/EU/{}/2020",
+        hexdigest = True
     wrapper:
         "file:../wrapper.py"
