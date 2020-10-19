@@ -52,7 +52,7 @@ shell(
 
 # Move output to the filenames specified by the rule
 shell("mv {tempdir}/{prefix}_screen.txt {snakemake.output.txt}")
-shell("mv {tempdir}/{prefix}_screen.png {snakemake.output.png}")
+shell("mv {tempdir}/{prefix}_screen.html {snakemake.output.html}")
 
 # Clean up temp
 shell("rm -r {tempdir}")
