@@ -2,6 +2,5 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - lofreq
-  - samtools
-  - htslib >= 1.4
+  - lofreq=2.1.5
+  - samtools=1.9
