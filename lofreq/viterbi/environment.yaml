@@ -4,3 +4,4 @@ channels:
 dependencies:
   - lofreq
   - samtools
+  - htslib >= 1.4
