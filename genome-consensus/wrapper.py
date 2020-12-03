@@ -18,7 +18,7 @@ shell(
     (bgzip -c {snakemake.input.vcf} > {snakemake.output.vcfgz}
     bcftools index {snakemake.output.vcfgz}
     cat {snakemake.input.ref} | bcftools consensus {snakemake.output.vcfgz} > {snakemake.output.consensus}
-    bedtools genomecov -bga -ibam {snakemake.input.bam} | awk '$4 < {mask}' | bedtools merge > {snakemake.output.bed}
+    bbmap.sh ref={snakemake.output.consensus} in={snakemake.input.reads} out=stdout.sam nodisk | samtools view -h -b -q 20 -f 0x3 - | genomeCoverageBed -bga -ibam stdin | awk '$4 < {mask}' | bedtools merge > {snakemake.output.bed}
     bedtools maskfasta -fi {snakemake.output.consensus} -bed {snakemake.output.bed} -fo {snakemake.output.consensus_masked}) {log}
     """
 )
