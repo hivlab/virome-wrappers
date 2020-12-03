@@ -5,8 +5,6 @@ channels:
 dependencies:
   - bcftools
   - bedtools
-  - htslib
-  - samtools =1.9
-  - bbmap =38
-  - pigz =2.3.4
+  - samtools
+  - bbmap
   
