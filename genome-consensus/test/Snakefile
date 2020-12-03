@@ -1,16 +1,18 @@
 rule genome_consensus:
     input:
-        bam = "refgenome_sorted.bam",
+        reads=["unmaphost.fq", "unmaphost.fq"],
         ref = "NC_045512.fa",
-        vcf = "lofreq.vcf"
+        vcf = "filtered.vcf"
     output:
-        vcfgz = "lofreq.vcf.gz",
-        consensus = "consensus.fa",
-        consensus_masked = "consensus_masked.fa",
-        bed = "refgenome.bed"
+        vcfgz="filtered.vcf.gz",
+        consensus="consensus.fa",
+        sam="consensusmap.sam",
+        consensus_masked="consensus_masked.fa",
+        bed="refgenome.bed"
     log:
         "test.log"
     params:
         mask = 20,
+        extra="-Xmx3200m fast"
     wrapper:
         "file:../wrapper.py"
