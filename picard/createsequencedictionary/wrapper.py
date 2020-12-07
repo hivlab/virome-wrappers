@@ -5,6 +5,13 @@ __license__ = "MIT"
 
 
 from snakemake.shell import shell
+from snakemake_wrapper_utils.java import get_java_opts
 
 
-shell("picard CreateSequenceDictionary R={snakemake.input} O={snakemake.output}")
+java_opts = get_java_opts(snakemake)
+
+
+shell(
+    "picard CreateSequenceDictionary {java_opts} "
+    "R={snakemake.input} O={snakemake.output} &> {snakemake.log}"
+)
