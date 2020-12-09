@@ -7,7 +7,8 @@ __license__ = "MIT"
 from snakemake.shell import shell
 
 extra=snakemake.params.get("extra", "")
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
-    "gatk IndexFeatureFile {extra} -I {snakemake.input[0]} -O {snakemake.output[0]}"
+    "(gatk IndexFeatureFile {extra} -I {snakemake.input[0]} -O {snakemake.output[0]}) {log}"
 )
