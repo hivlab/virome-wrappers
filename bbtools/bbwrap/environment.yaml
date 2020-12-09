@@ -6,3 +6,4 @@ dependencies:
   - bbmap =38
   - pigz =2.3.4
   - samtools ==1.9
+  - snakemake-wrapper-utils==0.1.3

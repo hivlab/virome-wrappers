@@ -3,7 +3,6 @@ rule all:
     input:
         "mapped.sam",
         "mapped_sorted.bam",
-        "mapped_sorted.bam.bai",
         "stats.txt",
         "mapped.fq.gz",
         "unmapped.fq.gz",

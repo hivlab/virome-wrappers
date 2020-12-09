@@ -4,6 +4,10 @@ __email__ = "tapa741@gmail.com"
 __license__ = "MIT"
 
 from snakemake.shell import shell
+from snakemake_wrapper_utils.java import get_java_opts
+
+
+java_opts = get_java_opts(snakemake)
 
 
 # Function to concatenate arguments with names
@@ -81,6 +85,6 @@ log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 
 # Run commands
-shell("(bbwrap.sh {inputs} {outputs} {extra}) {log}")
+shell("(bbwrap.sh {inputs} {outputs} {extra} {java_opts}) {log}")
 if "bamscript=bs.sh" in extra:
     shell("./bs.sh")

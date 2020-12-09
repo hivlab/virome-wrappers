@@ -7,3 +7,4 @@ dependencies:
   - pigz=2.3.4
   - samtools
   - sambamba
+  - snakemake-wrapper-utils==0.1.3

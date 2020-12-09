@@ -4,6 +4,10 @@ __email__ = "tapa741@gmail.com"
 __license__ = "MIT"
 
 from snakemake.shell import shell
+from snakemake_wrapper_utils.java import get_java_opts
+
+
+java_opts = get_java_opts(snakemake)
 
 
 def parseIO(d):
@@ -21,6 +25,6 @@ log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
     """
-    (clumpify.sh {inputs} {outputs} reorder {extra}) {log}
+    (clumpify.sh {inputs} {outputs} reorder {extra} {java_opts}) {log}
     """
 )

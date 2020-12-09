@@ -7,4 +7,5 @@ dependencies:
   - bbmap =38
   - openjdk =8.0.152
   - fastq_utils
+  - snakemake-wrapper-utils==0.1.3
   

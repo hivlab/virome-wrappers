@@ -4,6 +4,10 @@ __email__ = "tapa741@gmail.com"
 __license__ = "MIT"
 
 from snakemake.shell import shell
+from snakemake_wrapper_utils.java import get_java_opts
+
+
+java_opts = get_java_opts(snakemake)
 
 # Function to concatenate arguments with names.
 def arg_c(args):
@@ -32,4 +36,4 @@ extra = snakemake.params.get("extra", "")
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 # Run command.
-shell("(pileup.sh {inputs} {outputs} {extra}) {log}")
+shell("(pileup.sh {inputs} {outputs} {extra} {java_opts}) {log}")

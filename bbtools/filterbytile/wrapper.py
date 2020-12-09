@@ -5,6 +5,10 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 import re
+from snakemake_wrapper_utils.java import get_java_opts
+
+
+java_opts = get_java_opts(snakemake)
 
 
 def parseIO(d):
@@ -25,6 +29,6 @@ log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
     """
-    (filterbytile.sh {inputs} {outputs} {extra}) {log}
+    (filterbytile.sh {inputs} {outputs} {extra} {java_opts}) {log}
     """
 )

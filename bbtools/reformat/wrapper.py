@@ -5,6 +5,10 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 import re
+from snakemake_wrapper_utils.java import get_java_opts
+
+
+java_opts = get_java_opts(snakemake)
 
 # Function to concatenate arguments with names
 def arg_c(args, n):
@@ -62,6 +66,6 @@ log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
     """
-    (reformat.sh {inputs} {outputs} {extra}) {log}
+    (reformat.sh {inputs} {outputs} {extra} {java_opts}) {log}
     """
 )
