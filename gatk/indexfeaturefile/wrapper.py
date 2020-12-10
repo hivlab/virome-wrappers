@@ -10,5 +10,5 @@ extra=snakemake.params.get("extra", "")
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
-    "(gatk IndexFeatureFile {extra} -I {snakemake.input[0]} -O {snakemake.output[0]}) {log}"
+    "gatk IndexFeatureFile {extra} -I {snakemake.input[0]} -O {snakemake.output[0]} {log}"
 )
