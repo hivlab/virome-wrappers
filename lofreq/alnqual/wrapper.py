@@ -6,7 +6,11 @@ __license__ = "MIT"
 
 from snakemake.shell import shell
 extra = snakemake.params.get("extra", "")
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
-    "lofreq alnqual {extra} {snakemake.input.bam} {snakemake.input.ref} > {snakemake.output[0]}"
+    "lofreq alnqual {extra}"
+    " {snakemake.input.bam}"
+    " {snakemake.input.ref}"
+    " > {snakemake.output[0]} {log}"
 )

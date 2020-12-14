@@ -1,0 +1,13 @@
+
+rule alnqual:
+    input:
+        ref="sequences.fa",
+        bam="refgenome.bam",
+    output:
+        "alnqual.bam",
+    log:
+        "alnqual.log",
+    params:
+        extra="-b",
+    wrapper:
+        "file:../wrapper.py"
