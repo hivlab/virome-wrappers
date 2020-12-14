@@ -1,0 +1,17 @@
+
+rule realign:
+    input:
+        ref="sequences.fa",
+        bam="refgenome.bam",
+    output:
+        "realign.bam",
+    log:
+        "realign.log",
+    params:
+        extra="--verbose --keepflags",
+    resources:
+        runtime=120,
+        mem_mb=4000,
+    threads: 8
+    wrapper:
+        "file:../wrapper.py"

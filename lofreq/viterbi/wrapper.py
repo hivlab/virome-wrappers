@@ -9,6 +9,10 @@ extra = snakemake.params.get("extra", "")
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
-    "(lofreq faidx {snakemake.input.ref} "
-    "&& lofreq viterbi {extra} --ref {snakemake.input.ref} --out {snakemake.output[0]} {snakemake.input.bam}) {log}"
+    "(lofreq faidx {snakemake.input.ref}"
+    " && lofreq viterbi {extra}"
+    " --ref {snakemake.input.ref}"
+    " {snakemake.input.bam} |"
+    " samtools sort -"
+    " > {snakemake.output[0]}) {log}"
 )
