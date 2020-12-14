@@ -12,11 +12,11 @@ prefix = os.path.splitext(snakemake.output.sorted)[0]
 
 
 threads = "" if snakemake.threads <= 1 else f" -@ {snakemake.threads - 1} "
-
+log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 shell(
     """
-    samtools sort {snakemake.params} {threads} -o {snakemake.output.sorted} -T {prefix} {snakemake.input[0]} \
-    && samtools index {snakemake.output.sorted} {snakemake.output.index}
+    (samtools sort {snakemake.params} {threads} -o {snakemake.output.sorted} -T {prefix} {snakemake.input[0]} \
+    && samtools index {snakemake.output.sorted} {snakemake.output.index}) {log}
     """
 )
