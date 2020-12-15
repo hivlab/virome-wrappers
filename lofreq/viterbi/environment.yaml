@@ -4,3 +4,4 @@ channels:
   - defaults
 dependencies:
   - lofreq=2.1.5
+  - samtools>=1.10
