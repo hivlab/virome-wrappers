@@ -1,0 +1,33 @@
+
+N=3
+N_GROUPS=2
+
+rule simulate_experiment:
+    input:
+        fasta=rules.sample_transcripts.output.out,
+    output:
+        simulated_reads=expand(
+            "output/simulated_reads/{sample}_{pair}.fasta", sample=SAMPLES, pair=[1, 2]
+        ),
+        samples="output/simulated_reads/sim_rep_info.txt",
+    log:
+        "logs/simulate_reads.log",
+    params:
+        reads_per_transcript=lambda wildcards, input: reads_per_transcript(
+            input.fasta, 20
+        ),
+        fold_changes=fold_changes(
+            [0.5, 1, 2],
+            prob=[0.025, 0.95, 0.025],
+            n_groups=N_GROUPS,
+            n_transcripts=N_TX,
+            seed=10,
+        ),
+        num_reps=np.repeat(N, N_GROUPS, axis=0),
+        outdir=lambda wildcards, output: dirname(output.simulated_reads[0]),
+        seed=11,
+    resources:
+        mem_mb=4000,
+        runtime=120,
+    wrapper:
+        "file:../wrapper.py"
