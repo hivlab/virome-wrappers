@@ -10,8 +10,10 @@ rule rename:
         "renamed.fa"
     params:
         sample = "XY123",
-        stub = "SARS-CoV-2/human/EU/{}/2020",
-        hexdigest = False
+        host = "bat",
+        location = "Estonia",
+        collection_date = "2021-02-15",
+        hexdigest = False,
     wrapper:
         "file:../wrapper.py"
 
@@ -22,7 +24,9 @@ rule rename_dig:
         "renamed_dig.fa"
     params:
         sample = "XY123",
-        stub = "SARS-CoV-2/human/EU/{}/2020",
+        host = "bat",
+        location = "Estonia",
+        collection_date = "2021-02-15",
         hexdigest = True
     wrapper:
         "file:../wrapper.py"
