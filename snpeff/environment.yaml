@@ -1,0 +1,7 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - snpeff =5
+  - bcftools =1.11
+  - snakemake-wrapper-utils ==0.1.3
