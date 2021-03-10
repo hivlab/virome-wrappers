@@ -1,18 +1,14 @@
 rule genome_consensus:
     input:
-        reads=["unmaphost.fq", "unmaphost.fq"],
+        alignment="consensusmap.bam",
         ref = "NC_045512.fa",
         vcf = "filtered.vcf"
     output:
-        vcfgz="filtered.vcf.gz",
-        consensus="consensus.fa",
-        sam="consensusmap.sam",
-        consensus_masked="consensus_masked.fa",
-        bed="refgenome.bed"
+        consensus="results/consensus.fa",
     log:
-        "test.log"
+        "log/test.log"
     params:
-        mask = 20,
-        extra="-Xmx3200m fast"
+        mask = 5,
+        mapping_quality = 20,
     wrapper:
         "file:../wrapper.py"
