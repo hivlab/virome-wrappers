@@ -1,10 +1,10 @@
 rule genome_consensus:
     input:
-        alignment="consensusmap.bam",
+        alignment="refgenome.bam",
         ref = "NC_045512.fa",
         vcf = "filtered.vcf"
     output:
-        consensus="results/consensus.fa",
+        "results/consensus.fa",
     log:
         "log/test.log"
     params:

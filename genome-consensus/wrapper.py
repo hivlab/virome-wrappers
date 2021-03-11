@@ -16,26 +16,20 @@ mapping_quality = snakemake.params.get("mapping_quality", 0)
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
 # Temp files
-temp_vcfgz = tempfile.TemporaryFile()
+temp_vcfgz = tempfile.NamedTemporaryFile()
 vcfgz_index = str(temp_vcfgz.name) + ".csi"
-temp_consensus = tempfile.TemporaryFile()
-temp_bed = tempfile.TemporaryFile()
+del_bed = tempfile.NamedTemporaryFile()
+cov_bed = tempfile.NamedTemporaryFile()
+mask_bed = tempfile.NamedTemporaryFile()
+mask_bed = str(mask_bed.name) + ".bed"
 
 shell(
     """
     (bgzip -c {snakemake.input.vcf} > {temp_vcfgz.name}
     bcftools index {temp_vcfgz.name}
-    cat {snakemake.input.ref} | bcftools consensus {temp_vcfgz.name} > {temp_consensus.name}
-    samtools view -h -b -q {mapping_quality} -f 0x3 {snakemake.input.alignment} | genomeCoverageBed -bga -ibam stdin | awk '$4 < {mask}' | bedtools merge > {temp_bed.name}
-    bedtools maskfasta -fi {temp_consensus.name} -bed {temp_bed.name} -fo {snakemake.output.consensus}) {log}
-    """
-)
-
-shell(
-    """
-    rm -f {temp_vcfgz.name}
-    rm -f {vcfgz_index}
-    rm -f {temp_consensus.name}
-    rm -f {temp_bed.name}
+    samtools view -h -b -q {mapping_quality} {snakemake.input.alignment} | genomeCoverageBed -bga -ibam stdin | awk '$4 < {mask}' | bedtools merge > {cov_bed.name}
+    vcf2bed --deletions < {snakemake.input.vcf} > {del_bed.name}
+    bedtools subtract -a {cov_bed.name} -b {del_bed.name} > {mask_bed}
+    bcftools consensus -f {snakemake.input.ref} -m {mask_bed} {temp_vcfgz.name} > {snakemake.output[0]}) {log}
     """
 )
