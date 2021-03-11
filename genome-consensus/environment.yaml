@@ -6,4 +6,5 @@ dependencies:
   - bcftools
   - bedtools
   - samtools
+  - bedops
 
