@@ -10,5 +10,6 @@ rule genome_consensus:
     params:
         mask = 5,
         mapping_quality = 20,
+        name = "Cov9336"
     wrapper:
         "file:../wrapper.py"

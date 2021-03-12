@@ -11,6 +11,8 @@ import os
 # Parameters
 mask = snakemake.params.get("mask", 5)
 mapping_quality = snakemake.params.get("mapping_quality", 0)
+name = snakemake.params.get("name", "\\1")
+
 
 # Setup log
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
@@ -30,6 +32,6 @@ shell(
     samtools view -h -b -q {mapping_quality} {snakemake.input.alignment} | genomeCoverageBed -bga -ibam stdin | awk '$4 < {mask}' | bedtools merge > {cov_bed.name}
     vcf2bed --deletions < {snakemake.input.vcf} > {del_bed.name}
     bedtools subtract -a {cov_bed.name} -b {del_bed.name} > {mask_bed}
-    bcftools consensus -f {snakemake.input.ref} -m {mask_bed} {temp_vcfgz.name} > {snakemake.output[0]}) {log}
+    bcftools consensus -f {snakemake.input.ref} -m {mask_bed} {temp_vcfgz.name} | sed -E 's/^>(.*)/>{name}/' > {snakemake.output[0]}) {log}
     """
 )
