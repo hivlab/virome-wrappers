@@ -1,0 +1,34 @@
+rule all:
+    input:
+        "results/chimeras.fa", "results/chimeras_ref.fa"
+
+rule uchime_denovo:
+    input:
+        "AF091148.fsa",
+    output:
+        chimeras = "results/chimeras.fa",
+        nonchimeras = "results/nonchimeras.fa",
+        uchimeout = "results/uchimeout.txt"
+    log:
+        "results/test.log"
+    params:
+        task = "uchime_denovo",
+        extra = "",
+    wrapper:
+        "file:../wrapper.py"
+
+rule uchime_ref:
+    input:
+        fastafile="AF091148.fsa",
+        db="PR2-18S-rRNA-V4.fsa",
+    output:
+        chimeras = "results/chimeras_ref.fa",
+        nonchimeras = "results/nonchimeras_ref.fa",
+        uchimeout = "results/uchimeout_ref.txt"
+    log:
+        "results/test_ref.log"
+    params:
+        task = "uchime_ref",
+        extra = "",
+    wrapper:
+        "file:../wrapper.py"
