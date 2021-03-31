@@ -1,5 +1,5 @@
 __author__ = "Taavi Päll"
-__copyright__ = "Copyright 2020, Taavi Päll"
+__copyright__ = "Copyright 2021, Taavi Päll"
 __email__ = "tapa741@gmail.com"
 __license__ = "MIT"
 
@@ -24,6 +24,7 @@ del_bed = tempfile.NamedTemporaryFile()
 cov_bed = tempfile.NamedTemporaryFile()
 mask_bed = tempfile.NamedTemporaryFile()
 mask_bed = str(mask_bed.name) + ".bed"
+consensus = tempfile.NamedTemporaryFile()
 
 shell(
     """
@@ -32,6 +33,7 @@ shell(
     samtools view -h -b -q {mapping_quality} {snakemake.input.alignment} | genomeCoverageBed -bga -ibam stdin | awk '$4 < {mask}' | bedtools merge > {cov_bed.name}
     vcf2bed --deletions < {snakemake.input.vcf} > {del_bed.name}
     bedtools subtract -a {cov_bed.name} -b {del_bed.name} > {mask_bed}
-    bcftools consensus -f {snakemake.input.ref} -m {mask_bed} {temp_vcfgz.name} | sed -E 's/^>(.*)/>{name}/' > {snakemake.output[0]}) {log}
+    bcftools consensus -f {snakemake.input.ref} {temp_vcfgz.name} | sed -E 's/^>(.*)/>{name}/' > {consensus.name}
+    bedtools maskfasta -fi {consensus.name} -bed {mask_bed} -fo {snakemake.output[0]}) {log}
     """
 )
