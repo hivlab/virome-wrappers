@@ -1,0 +1,13 @@
+
+rule consensus:
+    input:
+        "indelqual.bam",
+    output:
+        fasta="consensus.fa",
+        qual="consensus.qual.txt",
+    log:
+        "consensus.log",
+    params:
+        extra="-q 20 -t 0.8 -m 5",
+    wrapper:
+        "file:../wrapper.py"
