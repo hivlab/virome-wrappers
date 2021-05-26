@@ -36,7 +36,7 @@ csvstats = snakemake.output.get("csvstats", "")
 csvstats_opt = "" if not csvstats else "-csvStats {}".format(csvstats)
 stats_opt = "-noStats" if not stats else "-stats {}".format(stats)
 
-reference = path.basename(snakemake.input.db)
+reference = path.basename(snakemake.params.db)
 
 shell(
     "snpEff {java_opts} -dataDir {data_dir} "
