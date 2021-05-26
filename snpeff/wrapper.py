@@ -29,7 +29,7 @@ if incalls.endswith(".bcf"):
 
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
-data_dir = Path(snakemake.input.db).parent.resolve()
+data_dir = Path(snakemake.params.db).parent.resolve()
 
 stats = snakemake.output.get("stats", "")
 csvstats = snakemake.output.get("csvstats", "")
