@@ -29,14 +29,14 @@ if incalls.endswith(".bcf"):
 
 log = snakemake.log_fmt_shell(stdout=False, stderr=True)
 
-data_dir = Path(snakemake.input.db).parent.resolve()
+data_dir = Path(snakemake.params.db).parent.resolve()
 
 stats = snakemake.output.get("stats", "")
 csvstats = snakemake.output.get("csvstats", "")
 csvstats_opt = "" if not csvstats else "-csvStats {}".format(csvstats)
 stats_opt = "-noStats" if not stats else "-stats {}".format(stats)
 
-reference = path.basename(snakemake.input.db)
+reference = path.basename(snakemake.params.db)
 
 shell(
     "snpEff {java_opts} -dataDir {data_dir} "
