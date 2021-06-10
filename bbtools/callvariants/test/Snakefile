@@ -1,0 +1,17 @@
+
+rule callvariants:
+    input:
+        input = "mapped.sam",
+        ref = "phiX174_ill.ref.fa.gz"
+    output:
+        vcf= "vars.vcf",
+        out="vars.txt",
+    params:
+        extra = "ow bgzip"
+    log:
+        "callvariants.log"
+    resources:
+        runtime = 120,
+        mem_mb = 1000
+    wrapper:
+        "file:../wrapper.py"
